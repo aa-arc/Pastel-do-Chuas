@@ -59,14 +59,15 @@
 </head>
 <body class="text-gray-800 antialiased min-h-screen pb-28">
 
-    <header class="relative bg-pastelDark text-white pt-8 pb-14 px-4 overflow-hidden rounded-b-[35px] shadow-xl">
+    <!-- Header com Fundo Limpo e Simples (Sem Capa) -->
+    <header class="relative bg-pastelDark text-white pt-8 pb-12 px-4 overflow-hidden rounded-b-[35px] shadow-xl">
         <div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-pastelGold opacity-10 blur-xl"></div>
         <div class="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-pastelAccent opacity-5 blur-2xl"></div>
 
         <div class="max-w-4xl mx-auto flex flex-col items-center text-center relative z-10">
             <!-- Logo local com detecção automática e fallback em vetor -->
             <div class="mb-3 bg-gradient-to-br from-pastelGold to-amber-600 p-1 rounded-full shadow-xl border-4 border-pastelDark flex items-center justify-center transform hover:rotate-6 transition-all duration-300">
-                <img src="logo.png" alt="Logo Pastelaria" class="h-16 w-16 md:h-20 md:w-20 object-contain rounded-full" onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden')">
+                <img src="logo.png" alt="Logo Pastelaria" class="h-16 w-16 md:h-20 md:w-20 object-contain rounded-full bg-white" onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden')">
                 
                 <div id="logo-fallback" class="hidden h-16 w-16 md:h-20 md:w-20 flex items-center justify-center bg-pastelDark rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-pastelGold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -75,26 +76,33 @@
                 </div>
             </div>
             
-            <h1 id="store-title" class="text-display text-2xl md:text-4xl font-bold tracking-wide text-pastelGold mb-1">
-                Pastelaria Modelo
-            </h1>
+            <!-- Nome da Loja com Botãozinho Vermelho Discreto e Pequeno ao Lado -->
+            <div class="flex items-center justify-center gap-1.5 mb-1 flex-wrap">
+                <h1 id="store-title" class="text-display text-2xl md:text-4xl font-bold tracking-wide text-pastelGold">
+                    Pastelaria Modelo
+                </h1>
+                <button type="button" onclick="abrirModalInfo()" class="bg-red-600 hover:bg-red-700 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] shadow transition-all transform active:scale-95" title="Informações e Horários">
+                    <i class="fa-solid fa-info"></i>
+                </button>
+            </div>
+
             <p class="text-gray-300 text-[10px] md:text-xs font-light tracking-widest uppercase mb-3">
                 Massa Crocante e Recheio Generoso
             </p>
 
-            <!-- Status do Estabelecimento e Regras de Negócio (Capa) -->
+            <!-- Status do Estabelecimento e Regras de Negócio -->
             <div class="flex flex-wrap justify-center items-center gap-2 text-[10px] md:text-xs">
-                <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Aberto Agora
+                <span id="store-status-badge" class="px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1.5 border">
+                    <span id="store-status-dot" class="w-1.5 h-1.5 rounded-full"></span> <span id="store-status-text">Verificando...</span>
                 </span>
                 <span class="bg-white/10 text-white/90 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                    <i class="fa-regular fa-clock text-pastelGold"></i> 19:30 - 22:30
+                    <i class="fa-regular fa-clock text-pastelGold"></i> 19:30 - 22:35
                 </span>
                 <span class="bg-white/10 text-white/90 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                     <i class="fa-solid fa-coins text-pastelGold"></i> Mínimo: R$ 10,00
                 </span>
                 <span class="bg-pastelAccent text-white px-2.5 py-0.5 rounded-full flex items-center gap-1 font-semibold shadow-sm animate-pulse">
-                    <i class="fa-solid fa-motorcycle text-white"></i> 30 - 40 min
+                    <i class="fa-solid fa-motorcycle text-white"></i> 30 - 50 min
                 </span>
                 <span class="bg-white/10 text-white/90 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                     <i class="fa-solid fa-star text-pastelGold"></i> <span id="rating-score-header">4.9</span> (<span id="rating-count-header"> 452 </span> avaliações)
@@ -103,7 +111,56 @@
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-3 md:px-6 -mt-6 relative z-20">
+    <!-- Modal de Informações da Loja e Horários -->
+    <div id="modal-info" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative border border-amber-100 transform scale-95 transition-transform duration-300" id="modal-content">
+            <!-- Botão X pequeno no canto direito para fechar -->
+            <button type="button" onclick="fecharModalInfo()" class="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 text-gray-600 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h3 class="text-display text-xl font-bold text-pastelDark mb-3 flex items-center gap-2 border-b border-amber-100 pb-2">
+                <i class="fa-solid fa-store text-pastelGold"></i> Pastelaria Modelo
+            </h3>
+
+            <div class="space-y-3 text-xs text-gray-600">
+                <div class="bg-amber-50/70 p-3 rounded-xl border border-amber-100">
+                    <p class="font-bold text-pastelDark mb-1"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i> Endereço:</p>
+                    <p class="text-gray-700">Rua Aurora, praça dos quiosques, N°4, Xique-Xique - BAHIA</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100 text-center">
+                        <p class="font-bold text-pastelDark text-[11px] mb-0.5"><i class="fa-solid fa-motorcycle text-amber-500 mr-1"></i> Delivery</p>
+                        <p class="text-[11px] text-gray-500">30 - 50 minutos</p>
+                    </div>
+                    <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100 text-center">
+                        <p class="font-bold text-pastelDark text-[11px] mb-0.5"><i class="fa-solid fa-store text-amber-500 mr-1"></i> Balcão</p>
+                        <p class="text-[11px] text-gray-500">20 - 40 minutos</p>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="font-bold text-pastelDark mb-1.5"><i class="fa-regular fa-clock text-pastelGold mr-1"></i> Horários de Funcionamento:</p>
+                    <ul class="space-y-1 bg-gray-50 p-3 rounded-xl border border-gray-100 text-[11px]">
+                        <li class="flex justify-between border-b border-gray-200/50 pb-1"><span>Domingo:</span> <span class="font-semibold text-pastelDark">19:35 - 22:35</span></li>
+                        <li class="flex justify-between border-b border-gray-200/50 pb-1"><span>Segunda:</span> <span class="font-semibold text-pastelDark">19:35 - 22:35</span></li>
+                        <li class="flex justify-between border-b border-gray-200/50 pb-1"><span>Terça:</span> <span class="font-semibold text-pastelDark">19:30 - 22:35</span></li>
+                        <li class="flex justify-between border-b border-gray-200/50 pb-1"><span>Quarta:</span> <span class="font-semibold text-pastelDark">19:35 - 22:35</span></li>
+                        <li class="flex justify-between border-b border-gray-200/50 pb-1"><span>Quinta:</span> <span class="font-semibold text-pastelDark">19:35 - 22:35</span></li>
+                        <li class="flex justify-between border-b border-gray-200/50 pb-1"><span>Sexta:</span> <span class="font-semibold text-pastelDark">19:35 - 22:35</span></li>
+                        <li class="flex justify-between pt-0.5"><span>Sábado:</span> <span class="font-semibold text-pastelDark">19:30 - 22:35</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <button type="button" onclick="fecharModalInfo()" class="mt-4 w-full bg-pastelDark hover:bg-black text-pastelGold font-bold py-2.5 rounded-xl text-xs transition-all">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <main class="max-w-4xl mx-auto px-3 md:px-6 mt-6 relative z-20">
         
         <!-- Barra de busca e Abas de navegação rápida -->
         <div class="bg-white rounded-2xl shadow-lg p-3 md:p-4 mb-6 border border-amber-100/50 flex flex-col md:flex-row gap-3 items-center">
@@ -197,6 +254,11 @@
                 <div id="min-alert" class="hidden bg-red-50 border border-red-100 text-red-600 px-3 py-2 rounded-xl text-center text-[11px] font-semibold flex items-center justify-center gap-1.5 mt-2">
                     <i class="fa-solid fa-triangle-exclamation"></i> O valor mínimo para pedidos é de R$ 10,00. Adicione mais delícias!
                 </div>
+                
+                <!-- Alerta de Fechado Fora do Horário -->
+                <div id="store-closed-alert" class="hidden bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2.5 rounded-xl text-center text-xs font-semibold flex items-center justify-center gap-2 mt-2">
+                    <i class="fa-solid fa-store-slash text-amber-600"></i> Estamos fechados no momento. Confira nossos horários no botão de informações acima!
+                </div>
             </div>
 
             <form id="order-form" onsubmit="enviarPedido(event)" class="mt-4 space-y-3.5">
@@ -226,7 +288,7 @@
                     </div>
                 </div>
 
-                <!-- Seção de Endereço Completo com GPS e Bairros de Xique-Xique -->
+                <!-- Seção de Endereço Completo com Bairros de Xique-Xique -->
                 <div id="addressSection" class="transition-all duration-300 space-y-3">
                     <div>
                         <label class="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1" for="endereco_rua">Rua e Número:</label>
@@ -258,15 +320,11 @@
                             <input type="text" id="ref_ponto" placeholder="Ex: Próximo ao mercado azul" class="w-full bg-gray-50 border border-gray-200 px-3 py-2.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-pastelGold focus:bg-white transition-all">
                         </div>
                     </div>
+                </div>
 
-                    <!-- Botão de Geolocalização GPS Integrado -->
-                    <div class="bg-amber-50/60 border border-amber-100 rounded-xl p-3 space-y-2">
-                        <button type="button" onclick="capturarGps()" class="w-full bg-pastelDark text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 active:scale-95 transition-all">
-                            <i class="fa-solid fa-location-crosshairs text-pastelGold"></i> Usar minha localização atual (GPS)
-                        </button>
-                        <p id="gps-status" class="text-[10px] text-gray-500 font-medium text-center">Opcional: facilita muito para o entregador te achar.</p>
-                        <a id="gps-link" href="#" target="_blank" rel="noopener" class="hidden text-[11px] font-bold text-emerald-700 underline break-all text-center block"></a>
-                    </div>
+                <!-- Botão de Geolocalização (GPS do Cliente para Entrega / Mapa da Loja para Retirada) -->
+                <div id="locationActionArea" class="bg-amber-50/60 border border-amber-100 rounded-xl p-3 space-y-2">
+                    <!-- Conteúdo dinâmico via JS -->
                 </div>
 
                 <!-- Seção de Pagamento -->
@@ -371,7 +429,7 @@
     </div>
 
     <script>
-        // Banco de dados dos produtos da Pastelaria Modelo
+        // Banco de dados dos produtos da Pastelaria Modelo (Com "Pastel Só Queijo")
         const produtos = [
             { id: 1, category: 'pastel', name: 'Frango com Catupiry', price: 8.00, desc: 'Frango desfiado e Catupiry cremoso.', image: 'pastelcatupiry.png' },
             { id: 2, category: 'pastel', name: 'Pastel Nordestino', price: 9.00, desc: 'Carne seca desfiada e queijo.', image: 'carnecomcalabresa.png' },
@@ -379,7 +437,7 @@
             { id: 4, category: 'pastel', name: 'Pastel de Carne', price: 7.00, desc: 'Carne moída temperada.', image: 'carnecomcalabresa.png' },
             { id: 5, category: 'pastel', name: 'Pastel de Pizza', price: 7.00, desc: 'Cubinhos de calabresa, queijo e orégano.', image: 'pizza.png' },
             { id: 6, category: 'pastel', name: 'Pastel Especial', price: 8.00, desc: 'Recheio especial da casa.', image: 'especial.png' },
-            { id: 7, category: 'pastel', name: 'Pastel de Só Queijo', price: 7.00, desc: 'Queijo mussarela derretido.', image: 'queijo.png' },
+            { id: 7, category: 'pastel', name: 'Pastel Só Queijo', price: 7.00, desc: 'Queijo mussarela derretido.', image: 'queijo.png' },
             { id: 8, category: 'pastel', name: 'Pastel de Frango', price: 7.00, desc: 'Frango desfiado.', image: 'pastelfrango.png' },
             { id: 9, category: 'bebida', name: 'Guaraná 1L', price: 7.00, desc: 'Refrigerante 1 Litro bem gelado.', image: 'guarana.png' },
             { id: 10, category: 'bebida', name: 'Pepsi 1L', price: 7.00, desc: 'Refrigerante 1 Litro bem gelado.', image: 'pepsi.png' }
@@ -401,26 +459,78 @@
             toggleTrocoAndPix();
             toggleCartaoGroup();
             atualizarExibicaoEstatistica();
+            verificarHorarioFuncionamento();
+            setInterval(verificarHorarioFuncionamento, 60000);
         });
+
+        // Funções para Abrir e Fechar o Modal de Informações
+        function abrirModalInfo() {
+            const modal = document.getElementById('modal-info');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function fecharModalInfo() {
+            const modal = document.getElementById('modal-info');
+            const content = document.getElementById('modal-content');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Verificação de Horário Detalhada por Dia da Semana
+        function verificarLojaAberta() {
+            const agora = new Date();
+            const diaSemana = agora.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+            const hora = agora.getHours();
+            const minuto = agora.getMinutes();
+            const minutosAtuais = hora * 60 + minuto;
+
+            let abertura = (diaSemana === 2 || diaSemana === 6) ? (19 * 60 + 30) : (19 * 60 + 35);
+            let fechamento = 22 * 60 + 35;
+
+            return minutosAtuais >= abertura && minutosAtuais <= fechamento;
+        }
+
+        function verificarHorarioFuncionamento() {
+            const aberto = verificarLojaAberta();
+            const badge = document.getElementById('store-status-badge');
+            const dot = document.getElementById('store-status-dot');
+            const text = document.getElementById('store-status-text');
+            const alertClosed = document.getElementById('store-closed-alert');
+
+            if (aberto) {
+                badge.className = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1.5";
+                dot.className = "w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping";
+                text.innerText = "Aberto Agora";
+                if(alertClosed) alertClosed.classList.add('hidden');
+            } else {
+                badge.className = "bg-red-500/20 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1.5";
+                dot.className = "w-1.5 h-1.5 bg-red-400 rounded-full";
+                text.innerText = "Fechado";
+                if(alertClosed) alertClosed.classList.remove('hidden');
+            }
+        }
 
         function loadCartFromStorage() {
             try {
                 const saved = localStorage.getItem('pastelaria_cart');
-                if (saved) {
-                    cart = JSON.parse(saved);
-                }
-            } catch (e) {
-                console.error("Erro ao carregar do LocalStorage:", e);
-                cart = {};
-            }
+                if (saved) cart = JSON.parse(saved);
+            } catch (e) { cart = {}; }
         }
 
         function saveCartToStorage() {
             try {
                 localStorage.setItem('pastelaria_cart', JSON.stringify(cart));
-            } catch (e) {
-                console.error("Erro ao gravar no LocalStorage:", e);
-            }
+            } catch (e) {}
         }
 
         function renderMenu(productsList) {
@@ -436,17 +546,13 @@
             if (pasteis.length === 0) {
                 pasteisGrid.innerHTML = `<div class="col-span-full py-4 text-center text-gray-500 bg-white/50 rounded-xl text-xs">Nenhum pastel correspondente encontrado.</div>`;
             } else {
-                pasteis.forEach(p => {
-                    pasteisGrid.innerHTML += createProductCard(p);
-                });
+                pasteis.forEach(p => { pasteisGrid.innerHTML += createProductCard(p); });
             }
 
             if (bebidas.length === 0) {
                 bebidasGrid.innerHTML = `<div class="col-span-full py-4 text-center text-gray-500 bg-white/50 rounded-xl text-xs">Nenhuma bebida correspondente encontrada.</div>`;
             } else {
-                bebidas.forEach(p => {
-                    bebidasGrid.innerHTML += createProductCard(p);
-                });
+                bebidas.forEach(p => { bebidasGrid.innerHTML += createProductCard(p); });
             }
         }
 
@@ -462,18 +568,12 @@
                     
                     <div class="flex-1 min-w-0 flex flex-col justify-between h-20 sm:h-24">
                         <div>
-                            <h3 class="font-bold text-xs sm:text-sm text-pastelDark truncate">
-                                ${p.name}
-                            </h3>
-                            <p class="text-[10px] sm:text-xs text-gray-400 leading-tight mt-0.5 line-clamp-2">
-                                ${p.desc}
-                            </p>
+                            <h3 class="font-bold text-xs sm:text-sm text-pastelDark truncate">${p.name}</h3>
+                            <p class="text-[10px] sm:text-xs text-gray-400 leading-tight mt-0.5 line-clamp-2">${p.desc}</p>
                         </div>
                         
                         <div class="flex items-center justify-between gap-1.5 mt-1">
-                            <span class="font-extrabold text-sm sm:text-base text-pastelAccent shrink-0">
-                                R$ ${p.price.toFixed(2).replace('.', ',')}
-                            </span>
+                            <span class="font-extrabold text-sm sm:text-base text-pastelAccent shrink-0">R$ ${p.price.toFixed(2).replace('.', ',')}</span>
                             
                             <div class="flex items-center bg-gray-50 rounded-full py-1 px-1.5 shadow-inner border border-gray-100/60 shrink-0">
                                 <button type="button" onclick="changeQty(${p.id}, -1)" class="w-7 h-7 flex items-center justify-center text-pastelAccent hover:bg-white active:scale-95 rounded-full font-black text-xs transition-transform focus:outline-none">
@@ -492,10 +592,7 @@
 
         function filterProducts() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = produtos.filter(p => 
-                p.name.toLowerCase().includes(query) || 
-                p.desc.toLowerCase().includes(query)
-            );
+            const filtered = produtos.filter(p => p.name.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
             renderMenu(filtered);
         }
 
@@ -526,29 +623,22 @@
         }
 
         function registrarNotaTrambique(notaClicada) {
-            const notaSecreta = 5;
             totalRatingCount++;
-            totalRatingSum += notaSecreta;
-
+            totalRatingSum += 5;
             atualizarExibicaoEstatistica();
 
-            const estrelas = document.querySelectorAll('.star-btn i');
-            estrelas.forEach((estrela) => {
+            document.querySelectorAll('.star-btn i').forEach((estrela) => {
                 estrela.className = "fa-solid fa-star text-pastelGold animate-pop";
             });
 
-            const feedbackMsg = document.getElementById('rating-feedback-msg');
-            feedbackMsg.innerHTML = `<span class="text-emerald-600 font-bold">Obrigado pela sua nota de 5 estrelas! ⭐⭐⭐⭐⭐</span>`;
-
+            document.getElementById('rating-feedback-msg').innerHTML = `<span class="text-emerald-600 font-bold">Obrigado pela sua nota de 5 estrelas! ⭐⭐⭐⭐⭐</span>`;
             showToast("Avaliação registrada! Obrigado! 😊", "fa-circle-check", "text-emerald-500");
         }
 
         function atualizarExibicaoEstatistica() {
             const mediaFinal = (totalRatingSum / totalRatingCount).toFixed(1);
-            const scoreHeader = document.getElementById('rating-score-header');
-            const countHeader = document.getElementById('rating-count-header');
-            if (scoreHeader) scoreHeader.innerText = mediaFinal;
-            if (countHeader) countHeader.innerText = totalRatingCount;
+            if (document.getElementById('rating-score-header')) document.getElementById('rating-score-header').innerText = mediaFinal;
+            if (document.getElementById('rating-count-header')) document.getElementById('rating-count-header').innerText = totalRatingCount;
         }
 
         function changeQty(id, change) {
@@ -556,7 +646,6 @@
             cart[id] += change;
 
             const elementSpan = document.getElementById(`qty-${id}`);
-
             if (cart[id] <= 0) {
                 delete cart[id];
                 if (elementSpan) elementSpan.innerText = '0';
@@ -580,7 +669,6 @@
             let itemsHtml = '';
 
             const keys = Object.keys(cart);
-
             keys.forEach(id => {
                 const produto = produtos.find(p => p.id == id);
                 if (produto) {
@@ -651,7 +739,6 @@
             if (totalItemsCount > 0) {
                 miniCartQty.innerText = `${totalItemsCount} ${totalItemsCount === 1 ? 'item' : 'itens'}`;
                 miniCartSubtotal.innerText = `Subtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}`;
-                
                 stickyMiniCart.classList.remove('translate-y-32', 'opacity-0', 'pointer-events-none');
                 stickyMiniCart.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
             } else {
@@ -661,9 +748,14 @@
 
             const minAlert = document.getElementById('min-alert');
             const btnFinalizar = document.getElementById('btn-finalizar');
+            const lojaAberta = verificarLojaAberta();
 
             if (subtotal > 0 && subtotal < minOrderAmount) {
                 minAlert.classList.remove('hidden');
+                btnFinalizar.classList.add('opacity-50', 'cursor-not-allowed');
+                btnFinalizar.disabled = true;
+            } else if (!lojaAberta) {
+                minAlert.classList.add('hidden');
                 btnFinalizar.classList.add('opacity-50', 'cursor-not-allowed');
                 btnFinalizar.disabled = true;
             } else {
@@ -678,12 +770,10 @@
         function clearCart() {
             cart = {};
             saveCartToStorage();
-            
             produtos.forEach(p => {
                 const el = document.getElementById(`qty-${p.id}`);
                 if (el) el.innerText = '0';
             });
-
             updateCart();
             showToast("Carrinho limpo com sucesso!", "fa-circle-xmark", "text-red-400");
         }
@@ -692,12 +782,8 @@
             if (cart[id]) {
                 delete cart[id];
                 saveCartToStorage();
-                
                 const elementSpan = document.getElementById(`qty-${id}`);
-                if (elementSpan) {
-                    elementSpan.innerText = '0';
-                }
-                
+                if (elementSpan) elementSpan.innerText = '0';
                 showToast("Item removido da sacola!", "fa-circle-xmark", "text-red-400");
                 updateCart();
             }
@@ -705,13 +791,13 @@
 
         function setDeliveryMethod(method) {
             deliveryMethod = method;
-            
             const btnDelivery = document.getElementById('methodDelivery');
             const btnPickup = document.getElementById('methodPickup');
             const addressSection = document.getElementById('addressSection');
             const ruaInput = document.getElementById('endereco_rua');
             const bairroInput = document.getElementById('bairro');
             const deliveryRow = document.getElementById('delivery-row');
+            const locationActionArea = document.getElementById('locationActionArea');
 
             if (method === 'entrega') {
                 btnDelivery.className = "py-2.5 text-center font-bold rounded-xl text-xs transition-all bg-pastelGold text-pastelDark border border-transparent shadow-sm";
@@ -721,6 +807,14 @@
                 ruaInput.setAttribute('required', 'true');
                 bairroInput.setAttribute('required', 'true');
                 deliveryRow.classList.remove('hidden');
+
+                locationActionArea.innerHTML = `
+                    <button type="button" onclick="capturarGps()" class="w-full bg-pastelDark text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 active:scale-95 transition-all">
+                        <i class="fa-solid fa-location-crosshairs text-pastelGold"></i> Usar minha localização atual (GPS)
+                    </button>
+                    <p id="gps-status" class="text-[10px] text-gray-500 font-medium text-center">Opcional: facilita muito para o entregador te achar.</p>
+                    <a id="gps-link" href="#" target="_blank" rel="noopener" class="hidden text-[11px] font-bold text-emerald-700 underline break-all text-center block"></a>
+                `;
             } else {
                 btnPickup.className = "py-2.5 text-center font-bold rounded-xl text-xs transition-all bg-pastelGold text-pastelDark border border-transparent shadow-sm";
                 btnDelivery.className = "py-2.5 text-center font-semibold rounded-xl text-xs transition-all bg-gray-50 text-gray-600 border border-gray-100";
@@ -729,6 +823,18 @@
                 ruaInput.removeAttribute('required');
                 bairroInput.removeAttribute('required');
                 deliveryRow.classList.add('hidden');
+                gpsUrl = '';
+
+                const linkLoja = "https://maps.app.goo.gl/2Knj8Yp5ohhZUi4h8";
+                locationActionArea.innerHTML = `
+                    <div class="text-center space-y-1.5">
+                        <p class="text-[10px] font-bold text-pastelDark uppercase tracking-wider">Local de Retirada do Pedido:</p>
+                        <a href="${linkLoja}" target="_blank" rel="noopener" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-all">
+                            <i class="fa-solid fa-map-location-dot"></i> Ver Localização da Pastelaria no Mapa
+                        </a>
+                        <p class="text-[10px] text-gray-500 font-medium">Clique para abrir o trajeto exato até a loja.</p>
+                    </div>
+                `;
             }
 
             updateCart();
@@ -737,7 +843,6 @@
         function toggleTrocoAndPix() {
             const pagamento = document.getElementById('pagamento').value;
             const pixArea = document.getElementById('pix-area');
-            
             if (pagamento === 'Pix') {
                 pixArea.classList.remove('hidden');
             } else {
@@ -898,6 +1003,11 @@
         function enviarPedido(event) {
             event.preventDefault();
 
+            if (!verificarLojaAberta()) {
+                showToast("A pastelaria está fechada no momento!", "fa-triangle-exclamation", "text-red-500");
+                return;
+            }
+
             const cartKeys = Object.keys(cart);
             if (cartKeys.length === 0) {
                 showToast("Selecione ao menos 1 item!", "fa-triangle-exclamation", "text-amber-500");
@@ -942,6 +1052,8 @@
                 } else {
                     finalDeliveryFee = 5.00;
                 }
+            } else {
+                bairroTxt = 'Retirada na Loja';
             }
 
             const valorTotalFinal = subtotal + finalDeliveryFee;
@@ -973,16 +1085,17 @@
                 pagamentoTexto += ` na maquininha - ${bandeira} (${modalidade})`;
             }
 
-            // Estrutura limpa e direta para leitura rápida na cozinha (exatamente como você pediu)
             let mensagem = `🔥 *PASTELARIA MODELO*
 ------------------
 👤 *${nome}* - *${celular}*
-📍 *${deliveryMethod === 'entrega' ? 'Delivery' : 'Retirada'}* - *${bairroTxt || 'Retirada na Loja'}*`;
+📍 *${deliveryMethod === 'entrega' ? 'Delivery' : 'Retirada'}* - *${bairroTxt}*`;
 
             if (deliveryMethod === 'entrega') {
                 mensagem += `\n🏠 *${enderecoTxt}*`;
                 if (pontoRefTxt) mensagem += `\n💬 *Ref:* ${pontoRefTxt}`;
                 if (gpsUrl) mensagem += `\n🧭 *GPS:* ${gpsUrl}`;
+            } else {
+                mensagem += `\n🏪 *Retirada no Estabelecimento*`;
             }
 
             mensagem += `
