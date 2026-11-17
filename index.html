@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pastelaria Modelo - Cardápio Digital </title>
+    <title>Pastelaria Modelo - Cardápio Digital</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -93,13 +93,11 @@
                 <span class="bg-white/10 text-white/90 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                     <i class="fa-solid fa-coins text-pastelGold"></i> Mínimo: R$ 10,00
                 </span>
-                <!-- Estimativa de tempo com destaque na capa -->
                 <span class="bg-pastelAccent text-white px-2.5 py-0.5 rounded-full flex items-center gap-1 font-semibold shadow-sm animate-pulse">
                     <i class="fa-solid fa-motorcycle text-white"></i> 30 - 40 min
                 </span>
-                <!-- Média do trambique de avaliações dinâmica no topo -->
                 <span class="bg-white/10 text-white/90 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                    <i class="fa-solid fa-star text-pastelGold"></i> <span id="rating-score-header">4.9</span> (<span id="rating-count-header"> 55 </span> avaliações)
+                    <i class="fa-solid fa-star text-pastelGold"></i> <span id="rating-score-header">4.9</span> (<span id="rating-count-header"> 452 </span> avaliações)
                 </span>
             </div>
         </div>
@@ -107,7 +105,7 @@
 
     <main class="max-w-4xl mx-auto px-3 md:px-6 -mt-6 relative z-20">
         
-        <!-- Barra de busca e Abas de navegação rápida (Sem emojis nos botões) -->
+        <!-- Barra de busca e Abas de navegação rápida -->
         <div class="bg-white rounded-2xl shadow-lg p-3 md:p-4 mb-6 border border-amber-100/50 flex flex-col md:flex-row gap-3 items-center">
             <div class="relative w-full md:flex-1">
                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
@@ -130,7 +128,7 @@
         </div>
 
         <div class="space-y-6">
-            <!-- Seção de Pastéis (Sem "Artesanais") -->
+            <!-- Seção de Pastéis -->
             <div id="pasteis-section">
                 <h2 class="text-display text-lg md:text-2xl font-bold text-pastelDark mb-3 flex items-center gap-2 border-b border-pastelGold/30 pb-1.5">
                     Pastéis
@@ -151,7 +149,7 @@
             </div>
         </div>
 
-        <!-- Módulo de Avaliação Dinâmica (Sem Comentários - Apenas Estrelas "Upgrade") -->
+        <!-- Módulo de Avaliação (Trambique 5 estrelas) -->
         <div id="rating-widget-area" class="bg-white rounded-2xl border border-amber-100 shadow-xl p-5 mt-8 max-w-2xl mx-auto text-center">
             <h3 class="font-bold text-sm sm:text-base text-pastelDark mb-2">Avalie nosso atendimento:</h3>
             <div class="flex justify-center gap-3 mb-2">
@@ -228,56 +226,114 @@
                     </div>
                 </div>
 
-                <!-- Seção de Endereço Completo -->
+                <!-- Seção de Endereço Completo com GPS e Bairros de Xique-Xique -->
                 <div id="addressSection" class="transition-all duration-300 space-y-3">
                     <div>
                         <label class="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1" for="endereco_rua">Rua e Número:</label>
                         <input type="text" id="endereco_rua" placeholder="Ex: Rua das Flores, 123" class="w-full bg-gray-50 border border-gray-200 px-3 py-2.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-pastelGold focus:bg-white transition-all">
                     </div>
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1" for="bairro">Bairro (R$ 3 Centro | R$ 5 Outros):</label>
-                            <input type="text" id="bairro" oninput="updateCart()" placeholder="Digite seu bairro" class="w-full bg-gray-50 border border-gray-200 px-3 py-2.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-pastelGold focus:bg-white transition-all">
+                            <label class="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1" for="bairro">Bairro (Xique-Xique - BA):</label>
+                            <select id="bairro" onchange="updateCart()" class="w-full bg-gray-50 border border-gray-200 px-3 py-2.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-pastelGold focus:bg-white transition-all">
+                                <option value="">Selecione o bairro</option>
+                                <option value="Centro">Centro (R$ 3,00)</option>
+                                <option value="Polivalente">Polivalente (R$ 5,00)</option>
+                                <option value="Senhor do Bonfim">Senhor do Bonfim (R$ 5,00)</option>
+                                <option value="Conjunto Habitacional Raul Teixeira Braga">Conjunto Habitacional Raul Teixeira Braga (R$ 5,00)</option>
+                                <option value="Zona Comercial">Zona Comercial (R$ 5,00)</option>
+                                <option value="Bairro da Paz">Bairro da Paz (R$ 5,00)</option>
+                                <option value="Zona Hospital Julieta Viana">Zona Hospital Julieta Viana (R$ 5,00)</option>
+                                <option value="Paramelos">Paramelos (R$ 5,00)</option>
+                                <option value="Ponta da Ilha">Ponta da Ilha (R$ 5,00)</option>
+                                <option value="São Francisco">São Francisco (R$ 5,00)</option>
+                                <option value="Santa Maria">Santa Maria (R$ 5,00)</option>
+                                <option value="Pedrinhas">Pedrinhas (R$ 5,00)</option>
+                                <option value="Guaxinim">Guaxinim (R$ 5,00)</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1" for="ref_ponto">Ponto de Referência (Opcional):</label>
                             <input type="text" id="ref_ponto" placeholder="Ex: Próximo ao mercado azul" class="w-full bg-gray-50 border border-gray-200 px-3 py-2.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-pastelGold focus:bg-white transition-all">
                         </div>
                     </div>
+
+                    <!-- Botão de Geolocalização GPS Integrado -->
+                    <div class="bg-amber-50/60 border border-amber-100 rounded-xl p-3 space-y-2">
+                        <button type="button" onclick="capturarGps()" class="w-full bg-pastelDark text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 active:scale-95 transition-all">
+                            <i class="fa-solid fa-location-crosshairs text-pastelGold"></i> Usar minha localização atual (GPS)
+                        </button>
+                        <p id="gps-status" class="text-[10px] text-gray-500 font-medium text-center">Opcional: facilita muito para o entregador te achar.</p>
+                        <a id="gps-link" href="#" target="_blank" rel="noopener" class="hidden text-[11px] font-bold text-emerald-700 underline break-all text-center block"></a>
+                    </div>
                 </div>
 
                 <!-- Seção de Pagamento -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="space-y-3">
                     <div>
                         <label class="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1" for="pagamento">Forma de Pagamento:</label>
-                        <select id="pagamento" onchange="toggleTrocoAndPix()" required class="w-full bg-gray-50 border border-gray-200 px-3 py-2.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-pastelGold focus:bg-white transition-all">
+                        <select id="pagamento" onchange="toggleTrocoAndPix(); toggleCartaoGroup();" required class="w-full bg-gray-50 border border-gray-200 px-3 py-2.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-pastelGold focus:bg-white transition-all">
                             <option value="Pix">Pix</option>
-                            <option value="Cartão">Cartão de Crédito/Débito</option>
+                            <option value="Cartão">Cartão (maquininha na entrega)</option>
                             <option value="Dinheiro">Dinheiro</option>
                         </select>
                     </div>
-                    <div id="troco-group" class="hidden">
-                        <label class="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1" for="troco">Troco para quanto?</label>
-                        <input type="number" id="troco" step="0.01" placeholder="Ex: 50,00" class="w-full bg-gray-50 border border-gray-200 px-3 py-2.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-pastelGold focus:bg-white transition-all">
-                    </div>
-                </div>
 
-                <!-- Box Informativo de Pix (Amigável e acolhedor) -->
-                <div id="pix-area" class="bg-amber-50/60 border border-amber-100 p-3.5 rounded-xl space-y-2.5">
-                    <div class="flex items-center gap-1.5">
-                        <i class="fa-solid fa-money-bill-transfer text-amber-600 text-sm"></i>
-                        <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wide">Chave Pix para Pagamento:</span>
+                    <!-- Box Informativo de Pix -->
+                    <div id="pix-area" class="bg-amber-50/60 border border-amber-100 p-3.5 rounded-xl space-y-2.5">
+                        <div class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-money-bill-transfer text-amber-600 text-sm"></i>
+                            <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wide">Chave Pix para Pagamento:</span>
+                        </div>
+                        <div class="flex items-center justify-between bg-white border border-amber-100/50 p-2.5 rounded-lg gap-2">
+                            <code class="text-xs sm:text-sm font-semibold text-pastelDark select-all break-all" id="chave-pix-texto">pix@pastelariamodelo.com.br</code>
+                            <button type="button" onclick="copiarPix()" class="bg-pastelGold hover:bg-amber-500 text-pastelDark px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 shrink-0">
+                                <i class="fa-regular fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-amber-700 font-medium bg-amber-100/40 p-2.5 rounded-lg border border-amber-200/20 flex items-start gap-2">
+                            <i class="fa-solid fa-circle-info text-amber-500 text-sm mt-0.5 shrink-0"></i>
+                            <span>Dica: Se puder, envie o comprovante de pagamento junto com a mensagem do WhatsApp para podermos agilizar a entrega! 😊</span>
+                        </p>
                     </div>
-                    <div class="flex items-center justify-between bg-white border border-amber-100/50 p-2.5 rounded-lg gap-2">
-                        <code class="text-xs sm:text-sm font-semibold text-pastelDark select-all break-all" id="chave-pix-texto">pix@pastelariamodelo.com.br</code>
-                        <button type="button" onclick="copiarPix()" class="bg-pastelGold hover:bg-amber-500 text-pastelDark px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 shrink-0">
-                            <i class="fa-regular fa-copy"></i> Copiar
-                        </button>
+
+                    <!-- Bloco de Troco Inteligente (Dinheiro) -->
+                    <div id="troco-group" class="hidden bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-2">
+                        <label class="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1" for="troco">Troco para quanto?</label>
+                        <input type="number" id="troco" step="0.01" placeholder="Ex: 50,00" class="w-full bg-white border border-gray-200 px-3 py-2.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-pastelGold transition-all">
+                        <label class="flex items-center gap-2 text-xs font-semibold text-gray-600 pt-1">
+                            <input type="checkbox" id="sem-troco" onchange="toggleTrocoSemNota()" class="w-4 h-4 accent-amber-500"> Não preciso de troco (valor exato)
+                        </label>
+                        <p id="troco-info" class="text-[11px] font-semibold"></p>
                     </div>
-                    <p class="text-[10px] text-amber-700 font-medium bg-amber-100/40 p-2.5 rounded-lg border border-amber-200/20 flex items-start gap-2">
-                        <i class="fa-solid fa-circle-info text-amber-500 text-sm mt-0.5 shrink-0"></i>
-                        <span>Dica: Se puder, envie o comprovante de pagamento junto com a mensagem do WhatsApp para podermos agilizar a entrega! 😊</span>
-                    </p>
+
+                    <!-- Bloco de Seleção de Bandeira e Modalidade (Cartão) -->
+                    <div id="cartao-group" class="hidden bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-2.5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1" for="bandeira">Bandeira do Cartão:</label>
+                                <select id="bandeira" class="w-full bg-white border border-gray-200 px-3 py-2.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-pastelGold transition-all">
+                                    <option value="">Selecione a bandeira</option>
+                                    <option value="Visa">Visa</option>
+                                    <option value="Mastercard">Mastercard</option>
+                                    <option value="Elo">Elo</option>
+                                    <option value="Hipercard">Hipercard</option>
+                                    <option value="American Express">American Express</option>
+                                    <option value="Outra">Outra</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1" for="modalidade">Modalidade:</label>
+                                <select id="modalidade" class="w-full bg-white border border-gray-200 px-3 py-2.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-pastelGold transition-all">
+                                    <option value="">Selecione</option>
+                                    <option value="Crédito">Crédito</option>
+                                    <option value="Débito">Débito</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-gray-500 font-medium"><i class="fa-regular fa-credit-card text-pastelGold"></i> Maquininha levada até você na entrega.</p>
+                    </div>
                 </div>
 
                 <div>
@@ -315,7 +371,7 @@
     </div>
 
     <script>
-        // Banco de dados mapeado diretamente com a imagem image_e9540a.png (Sem "Artesanais" e com Carne Seca no Nordestino)
+        // Banco de dados dos produtos da Pastelaria Modelo
         const produtos = [
             { id: 1, category: 'pastel', name: 'Frango com Catupiry', price: 8.00, desc: 'Frango desfiado e Catupiry cremoso.', image: 'pastelcatupiry.png' },
             { id: 2, category: 'pastel', name: 'Pastel Nordestino', price: 9.00, desc: 'Carne seca desfiada e queijo.', image: 'carnecomcalabresa.png' },
@@ -332,8 +388,8 @@
         let cart = {};
         let deliveryMethod = 'entrega';
         const minOrderAmount = 10.00;
+        let gpsUrl = '';
 
-        // Votos iniciais do "trambique" para estatísticas esteticamente altas
         let totalRatingSum = 4.9 * 452;
         let totalRatingCount = 452;
 
@@ -343,6 +399,7 @@
             updateCart();
             setDeliveryMethod('entrega');
             toggleTrocoAndPix();
+            toggleCartaoGroup();
             atualizarExibicaoEstatistica();
         });
 
@@ -395,10 +452,12 @@
 
         function createProductCard(p) {
             const qty = cart[p.id] || 0;
+            const fallbackImgSvg = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><rect width="96" height="96" fill="#FAF6F0"/><text x="48" y="62" font-size="40" text-anchor="middle">🥟</text></svg>');
+            
             return `
                 <div class="bg-white rounded-2xl p-2.5 sm:p-3 border border-amber-100/40 shadow-sm flex items-center gap-3 relative group">
                     <div class="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-xl overflow-hidden bg-amber-50/40 border border-amber-100/50 flex items-center justify-center">
-                        <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/128x128/fbf9f6/e65c00?text=Pastel'">
+                        <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='${fallbackImgSvg}'">
                     </div>
                     
                     <div class="flex-1 min-w-0 flex flex-col justify-between h-20 sm:h-24">
@@ -416,7 +475,6 @@
                                 R$ ${p.price.toFixed(2).replace('.', ',')}
                             </span>
                             
-                            <!-- Seletor de Quantidade Flexível -->
                             <div class="flex items-center bg-gray-50 rounded-full py-1 px-1.5 shadow-inner border border-gray-100/60 shrink-0">
                                 <button type="button" onclick="changeQty(${p.id}, -1)" class="w-7 h-7 flex items-center justify-center text-pastelAccent hover:bg-white active:scale-95 rounded-full font-black text-xs transition-transform focus:outline-none">
                                     <i class="fa-solid fa-minus"></i>
@@ -467,22 +525,18 @@
             }
         }
 
-        // Trambique de avaliação: força secretamente qualquer voto para 5 estrelas!
         function registrarNotaTrambique(notaClicada) {
-            const notaSecreta = 5; // Força estética sempre em 5 estrelas
-            
+            const notaSecreta = 5;
             totalRatingCount++;
             totalRatingSum += notaSecreta;
 
             atualizarExibicaoEstatistica();
 
-            // Pinta todas as estrelas locais de dourado imediatamente
             const estrelas = document.querySelectorAll('.star-btn i');
-            estrelas.forEach((estrela, idx) => {
+            estrelas.forEach((estrela) => {
                 estrela.className = "fa-solid fa-star text-pastelGold animate-pop";
             });
 
-            // Mensagem amigável de sucesso na tela
             const feedbackMsg = document.getElementById('rating-feedback-msg');
             feedbackMsg.innerHTML = `<span class="text-emerald-600 font-bold">Obrigado pela sua nota de 5 estrelas! ⭐⭐⭐⭐⭐</span>`;
 
@@ -491,8 +545,10 @@
 
         function atualizarExibicaoEstatistica() {
             const mediaFinal = (totalRatingSum / totalRatingCount).toFixed(1);
-            document.getElementById('rating-score-header').innerText = mediaFinal;
-            document.getElementById('rating-count-header').innerText = totalRatingCount;
+            const scoreHeader = document.getElementById('rating-score-header');
+            const countHeader = document.getElementById('rating-count-header');
+            if (scoreHeader) scoreHeader.innerText = mediaFinal;
+            if (countHeader) countHeader.innerText = totalRatingCount;
         }
 
         function changeQty(id, change) {
@@ -615,6 +671,8 @@
                 btnFinalizar.classList.remove('opacity-50', 'cursor-not-allowed');
                 btnFinalizar.disabled = false;
             }
+
+            atualizarTrocoInteligente();
         }
 
         function clearCart() {
@@ -678,19 +736,8 @@
 
         function toggleTrocoAndPix() {
             const pagamento = document.getElementById('pagamento').value;
-            const trocoGroup = document.getElementById('troco-group');
-            const trocoInput = document.getElementById('troco');
             const pixArea = document.getElementById('pix-area');
             
-            if (pagamento === 'Dinheiro') {
-                trocoGroup.classList.remove('hidden');
-                trocoInput.setAttribute('required', 'true');
-            } else {
-                trocoGroup.classList.add('hidden');
-                trocoInput.removeAttribute('required');
-                trocoInput.value = '';
-            }
-
             if (pagamento === 'Pix') {
                 pixArea.classList.remove('hidden');
             } else {
@@ -698,16 +745,124 @@
             }
         }
 
+        function toggleCartaoGroup() {
+            const pagamento = document.getElementById('pagamento').value;
+            const trocoGroup = document.getElementById('troco-group');
+            const cartaoGroup = document.getElementById('cartao-group');
+            const trocoInput = document.getElementById('troco');
+            const bandeiraInput = document.getElementById('bandeira');
+            const modalidadeInput = document.getElementById('modalidade');
+
+            if (pagamento === 'Dinheiro') {
+                trocoGroup.classList.remove('hidden');
+                cartaoGroup.classList.add('hidden');
+                bandeiraInput.removeAttribute('required');
+                modalidadeInput.removeAttribute('required');
+            } else if (pagamento === 'Cartão') {
+                cartaoGroup.classList.remove('hidden');
+                trocoGroup.classList.add('hidden');
+                trocoInput.value = '';
+                document.getElementById('sem-troco').checked = false;
+                document.getElementById('troco-info').innerText = '';
+                bandeiraInput.setAttribute('required', 'true');
+                modalidadeInput.setAttribute('required', 'true');
+            } else {
+                trocoGroup.classList.add('hidden');
+                cartaoGroup.classList.add('hidden');
+                trocoInput.value = '';
+                bandeiraInput.removeAttribute('required');
+                modalidadeInput.removeAttribute('required');
+            }
+        }
+
+        function toggleTrocoSemNota() {
+            const semTroco = document.getElementById('sem-troco').checked;
+            const trocoInput = document.getElementById('troco');
+            trocoInput.disabled = semTroco;
+            if (semTroco) trocoInput.value = '';
+            atualizarTrocoInteligente();
+        }
+
+        document.getElementById('troco').addEventListener('input', atualizarTrocoInteligente);
+
+        function atualizarTrocoInteligente() {
+            const pagamento = document.getElementById('pagamento').value;
+            if (pagamento !== 'Dinheiro') return;
+
+            const semTroco = document.getElementById('sem-troco').checked;
+            const trocoInfo = document.getElementById('troco-info');
+            const trocoInput = document.getElementById('troco');
+
+            let subtotal = 0;
+            Object.keys(cart).forEach(id => {
+                const p = produtos.find(prod => prod.id == id);
+                if (p) subtotal += p.price * cart[id];
+            });
+
+            let taxa = 5.00;
+            const bairroInput = document.getElementById('bairro').value.trim().toLowerCase();
+            if (bairroInput.includes('centro')) taxa = 3.00;
+            const totalGeral = subtotal + taxa;
+
+            if (semTroco) {
+                trocoInfo.className = "text-[11px] font-semibold text-emerald-600";
+                trocoInfo.innerText = "Sem troco: você pagará o valor exato.";
+                return;
+            }
+
+            const valorInformado = parseFloat(trocoInput.value);
+            if (isNaN(valorInformado)) {
+                trocoInfo.innerText = "";
+                return;
+            }
+
+            const diferenca = valorInformado - totalGeral;
+            if (diferenca < 0) {
+                trocoInfo.className = "text-[11px] font-semibold text-red-600";
+                trocoInfo.innerText = `Valor insuficiente! Faltam R$ ${Math.abs(diferenca).toFixed(2).replace('.', ',')} para cobrir o total.`;
+            } else if (diferenca === 0) {
+                trocoInfo.className = "text-[11px] font-semibold text-emerald-600";
+                trocoInfo.innerText = "Valor exato, não é preciso troco.";
+            } else {
+                trocoInfo.className = "text-[11px] font-semibold text-emerald-600";
+                trocoInfo.innerText = `O entregador levará de troco: R$ ${diferenca.toFixed(2).replace('.', ',')}`;
+            }
+        }
+
+        function capturarGps() {
+            const statusEl = document.getElementById('gps-status');
+            const linkEl = document.getElementById('gps-link');
+
+            if (!navigator.geolocation) {
+                statusEl.innerText = "Seu navegador não suporta GPS.";
+                return;
+            }
+
+            statusEl.innerText = "Obtendo sua localização via GPS...";
+            navigator.geolocation.getCurrentPosition(position => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                gpsUrl = `https://www.google.com/maps?q=${lat.toFixed(6)},${lon.toFixed(6)}`;
+                
+                statusEl.innerText = "Localização capturada com sucesso!";
+                linkEl.href = gpsUrl;
+                linkEl.innerText = "Ver no Google Maps";
+                linkEl.classList.remove('hidden');
+                showToast("GPS capturado com sucesso!", "fa-location-dot", "text-emerald-500");
+            }, error => {
+                statusEl.innerText = "Não foi possível obter a localização. Preencha o endereço manualmente.";
+                showToast("Erro ao capturar GPS", "fa-triangle-exclamation", "text-red-500");
+            }, { enableHighAccuracy: true, timeout: 10000 });
+        }
+
         function copiarPix() {
             const textToCopy = document.getElementById('chave-pix-texto').innerText;
-            
             const tempInput = document.createElement('textarea');
             tempInput.value = textToCopy;
             document.body.appendChild(tempInput);
             tempInput.select();
             document.execCommand('copy');
             document.body.removeChild(tempInput);
-            
             showToast("Chave Pix copiada! 📋", "fa-circle-check", "text-emerald-500");
         }
 
@@ -724,6 +879,20 @@
             } else if (value.length > 0) {
                 input.value = `(${value}`;
             }
+        }
+
+        function showToast(mensagem, icone, cor) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = mensagem;
+            document.getElementById('toast-icon').className = `fa-solid ${icone} ${cor || 'text-pastelGold'} text-base shrink-0`;
+            
+            toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+            }, 3000);
         }
 
         function enviarPedido(event) {
@@ -743,7 +912,7 @@
                 if (produto) {
                     const valorItemTotal = produto.price * cart[id];
                     subtotal += valorItemTotal;
-                    itensTexto += `• *${cart[id]}x* ${produto.name}\n`;
+                    itensTexto += `- ${cart[id]}x ${produto.name} (R$ ${valorItemTotal.toFixed(2).replace('.', ',')})\n`;
                 }
             });
 
@@ -755,7 +924,6 @@
             const nome = document.getElementById('nome').value.trim();
             const celular = document.getElementById('celular').value.trim();
             const pagamento = document.getElementById('pagamento').value;
-            const troco = document.getElementById('troco').value;
             const observacao = document.getElementById('observacao').value.trim();
             
             let finalDeliveryFee = 0;
@@ -765,7 +933,7 @@
 
             if (deliveryMethod === 'entrega') {
                 const rua = document.getElementById('endereco_rua').value.trim();
-                bairroTxt = document.getElementById('bairro').value.trim();
+                bairroTxt = document.getElementById('bairro').value;
                 pontoRefTxt = document.getElementById('ref_ponto').value.trim();
                 
                 enderecoTxt = rua;
@@ -778,57 +946,63 @@
 
             const valorTotalFinal = subtotal + finalDeliveryFee;
 
-            // Template estruturado, prático, limpo e profissional (sem foguinhos ou poluição)
-            let mensagem = `*📋 NOVO PEDIDO*\n`;
-            mensagem += `-----------------------------\n`;
-            mensagem += `⏱️ *Estimativa:* 30 - 40 minutos\n`;
-            mensagem += `-----------------------------\n`;
-            
-            if (deliveryMethod === 'entrega') {
-                mensagem += `🛵 *ENTREGA EM DOMICÍLIO*\n`;
-                mensagem += `👤 *Cliente:* ${nome}\n`;
-                mensagem += `📞 *Celular:* ${celular}\n`;
-                mensagem += `📍 *Endereço:* ${enderecoTxt}\n`;
-                mensagem += `🏡 *Bairro:* ${bairroTxt}\n`;
-                if (pontoRefTxt) {
-                    mensagem += `💬 *Ponto Ref:* ${pontoRefTxt}\n`;
+            let pagamentoTexto = pagamento;
+            if (pagamento === 'Dinheiro') {
+                const semTroco = document.getElementById('sem-troco').checked;
+                if (semTroco) {
+                    pagamentoTexto += " (Não precisa de troco)";
+                } else {
+                    const trocoVal = document.getElementById('troco').value;
+                    if (trocoVal) {
+                        const valorDinheiro = parseFloat(trocoVal);
+                        const trocoCalculado = valorDinheiro - valorTotalFinal;
+                        pagamentoTexto += ` (Troco para R$ ${valorDinheiro.toFixed(2).replace('.', ',')}`;
+                        if (trocoCalculado > 0) {
+                            pagamentoTexto += ` | Levar troco de R$ ${trocoCalculado.toFixed(2).replace('.', ',')}`;
+                        }
+                        pagamentoTexto += `)`;
+                    }
                 }
-            } else {
-                mensagem += `🏪 *RETIRADA NA LOJA*\n`;
-                mensagem += `👤 *Cliente:* ${nome}\n`;
-                mensagem += `📞 *Celular:* ${celular}\n`;
+            } else if (pagamento === 'Cartão') {
+                const bandeira = document.getElementById('bandeira').value;
+                const modalidade = document.getElementById('modalidade').value;
+                if (!bandeira || !modalidade) {
+                    showToast("Selecione a bandeira e a modalidade do cartão!", "fa-triangle-exclamation", "text-red-500");
+                    return;
+                }
+                pagamentoTexto += ` na maquininha - ${bandeira} (${modalidade})`;
             }
-            
-            mensagem += `-----------------------------\n`;
-            mensagem += `🛒 *ITENS DO PEDIDO:*\n${itensTexto}`;
-            
+
+            // Estrutura limpa e direta para leitura rápida na cozinha (exatamente como você pediu)
+            let mensagem = `🔥 *PASTELARIA MODELO*
+------------------
+👤 *${nome}* - *${celular}*
+📍 *${deliveryMethod === 'entrega' ? 'Delivery' : 'Retirada'}* - *${bairroTxt || 'Retirada na Loja'}*`;
+
+            if (deliveryMethod === 'entrega') {
+                mensagem += `\n🏠 *${enderecoTxt}*`;
+                if (pontoRefTxt) mensagem += `\n💬 *Ref:* ${pontoRefTxt}`;
+                if (gpsUrl) mensagem += `\n🧭 *GPS:* ${gpsUrl}`;
+            }
+
+            mensagem += `
+------------------
+🛒 *PEDIDO:*
+${itensTexto}------------------
+💰 *Subtotal:* R$ ${subtotal.toFixed(2).replace('.', ',')}
+🛵 *Entrega:* R$ ${finalDeliveryFee.toFixed(2).replace('.', ',')}
+💵 *TOTAL:* R$ ${valorTotalFinal.toFixed(2).replace('.', ',')}
+------------------
+💳 *Pagamento:* ${pagamentoTexto}`;
+
             if (observacao) {
-                mensagem += `📝 *Obs:* _${observacao}_\n`;
+                mensagem += `\n📝 *Obs:* ${observacao}`;
             }
-            mensagem += `-----------------------------\n`;
-            mensagem += `💳 *Pagamento:* ${pagamento}`;
 
-            if (pagamento === 'Dinheiro' && troco) {
-                const trocoCalculado = parseFloat(troco) - valorTotalFinal;
-                mensagem += ` (Troco p/ R$ ${parseFloat(troco).toFixed(2).replace('.', ',')}`;
-                if (trocoCalculado > 0) {
-                    mensagem += ` | Troco: R$ ${trocoCalculado.toFixed(2).replace('.', ',')}`;
-                }
-                mensagem += `)`;
-            }
-            mensagem += `\n`;
-
-            mensagem += `💰 *TOTAL A PAGAR: R$ ${valorTotalFinal.toFixed(2).replace('.', ',')}*\n`;
-            if (deliveryMethod === 'entrega') {
-                mensagem += `_(Subtotal: R$ ${subtotal.toFixed(2).replace('.', ',')} | Entrega: R$ ${finalDeliveryFee.toFixed(2).replace('.', ',')})_\n`;
-            }
-            
             if (pagamento === 'Pix') {
-                mensagem += `-----------------------------\n`;
-                mensagem += `📌 *Nota:* O comprovante do Pix será enviado logo em seguida!`;
+                mensagem += `\n------------------\n📌 *Nota:* O comprovante do Pix será enviado em seguida!`;
             }
 
-            // Reseta carrinho pós finalização de pedido
             localStorage.removeItem('pastelaria_cart');
 
             const seuNumeroWhatsApp = "5574988017089"; 
