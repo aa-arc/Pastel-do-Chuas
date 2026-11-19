@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel de Pedidos</title>
+<style>
+:root{
+  --bg:#f1f5f9;--sf:#ffffff;--sf2:#f8fafc;--tx:#0f172a;--mu:#475569;
+  --bd:#cbd5e1;--ac:#0f172a;--ac2:#1e293b;--ring:#2563eb;
+  --ok:#166534;--okb:#dcfce7;--nv:#9a3412;--nvb:#ffedd5;--er:#b91c1c;
+  --bobina:80mm;--cf:12px;--cm:3mm
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:13.5px/1.38 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,dl,dd{margin:0}
+.mu{color:var(--mu)}
+label{display:block;margin-bottom:3px;font-size:11.5px;font-weight:600;color:#334155}
+input[type=email],input[type=password],input[type=text],select{
+  width:100%;height:36px;padding:0 10px;border:1px solid var(--bd);border-radius:8px;
+  background:var(--sf);color:var(--tx);font:inherit
+}
+input:focus,select:focus{outline:none;border-color:var(--ring);box-shadow:0 0 0 2px rgba(37,99,235,.15)}
+:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  height:34px;padding:0 11px;border:1px solid var(--bd);border-radius:8px;
+  background:var(--sf);color:var(--tx);font:600 12px/1 inherit;cursor:pointer;
+  transition:background .12s,border-color .12s
+}
+.btn:hover:not(:disabled){background:#f1f5f9;border-color:#94a3b8}
+.btn.pri{border-color:var(--ac);background:var(--ac);color:#fff}
+.btn.pri:hover:not(:disabled){background:var(--ac2)}
+.btn.ghost{border-color:rgba(255,255,255,.24);background:rgba(255,255,255,.1);color:#fff}
+.btn.ghost:hover:not(:disabled){background:rgba(255,255,255,.18)}
+
+/* Tela de login isolada */
+#login{
+  min-height:100dvh;display:grid;place-items:center;padding:16px
+}
+#login.escondido{display:none}
+.login{
+  width:100%;max-width:360px;display:grid;gap:11px;padding:22px;
+  background:var(--sf);border:1px solid var(--bd);border-radius:12px;
+  box-shadow:0 12px 28px -18px rgba(15,23,42,.3)
+}
+.login h1{font-size:18px}
+.campo-senha{display:flex;gap:6px}
+.campo-senha input{flex:1}
+.btn-olho{
+  padding:0 11px;height:36px;border:1px solid var(--bd);border-radius:8px;
+  background:var(--sf2);color:var(--tx);font:600 12px/1 inherit;cursor:pointer;white-space:nowrap
+}
+.btn-olho:hover{background:#e2e8f0}
+.erro{min-height:16px;color:var(--er);font-size:12px;font-weight:500}
+
+/* Aplicativo principal isolado */
+#app{display:block}
+#app.escondido{display:none}
+
+.topo{
+  position:sticky;top:0;z-index:20;
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:9px 14px;background:var(--ac);color:#fff
+}
+.topo-esq{display:flex;align-items:center;gap:8px;min-width:0}
+.topo h1{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge-modo{padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.16);font-size:11px;font-weight:600;color:#f8fafc}
+.topo-dir{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.usuario-txt{font-size:12px;color:#cbd5e1;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.conteudo{max-width:1160px;margin:0 auto;padding:12px 14px 36px;display:grid;gap:10px}
+
+.barra{
+  display:grid;grid-template-columns:1.2fr .9fr 1.2fr;gap:8px;
+  padding:10px;background:var(--sf);border:1px solid var(--bd);border-radius:10px
+}
+.bloco{display:grid;gap:7px;align-content:start;padding:9px 10px;background:var(--sf2);border:1px solid #e2e8f0;border-radius:8px}
+.bloco-tit{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--mu)}
+.linha{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.col{flex:1;min-width:105px}
+
+.seg{display:grid;grid-template-columns:repeat(3,1fr);background:#e2e8f0;padding:2px;border-radius:7px;gap:2px}
+.seg button{
+  height:29px;border:0;border-radius:5px;background:transparent;color:#334155;
+  font:600 12px/1 inherit;cursor:pointer
+}
+.seg button[aria-pressed=true]{background:var(--sf);color:var(--tx);box-shadow:0 1px 2px rgba(15,23,42,.12)}
+
+.chk{display:inline-flex;align-items:center;gap:6px;margin:0;font-size:12px;font-weight:600;color:var(--tx);cursor:pointer}
+.chk input{width:15px;height:15px;margin:0;accent-color:var(--ac)}
+
+.resumo{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  background:var(--sf);border:1px solid var(--bd);border-radius:10px;overflow:hidden
+}
+.resumo>div{padding:9px 12px;border-left:1px solid #e2e8f0}
+.resumo>div:first-child{border-left:0}
+.resumo span{display:block;font-size:10.5px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.03em}
+.resumo strong{display:block;margin-top:2px;font-size:17px;font-weight:700}
+
+#lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:10px;align-items:start}
+.pedido{
+  display:grid;gap:7px;padding:11px;
+  background:var(--sf);border:1px solid var(--bd);border-radius:10px
+}
+.pedido-topo{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
+.pedido-id{display:grid;gap:1px}
+.pedido-id strong{font-size:13.5px}
+.pedido-id span{font-size:11.5px;color:var(--mu)}
+.tags{display:flex;gap:4px;flex-wrap:wrap}
+.tag{
+  padding:2px 7px;border-radius:999px;font-size:10.5px;font-weight:700;
+  border:1px solid #cbd5e1;background:#f1f5f9;color:#334155
+}
+.tag.ok{border-color:#86efac;background:var(--okb);color:var(--ok)}
+.tag.nv{border-color:#fdba74;background:var(--nvb);color:var(--nv)}
+
+.info-curta{
+  display:grid;gap:4px;padding:7px 9px;border-radius:8px;
+  background:var(--sf2);border:1px solid #e2e8f0;font-size:12px
+}
+.info-curta div{display:flex;justify-content:space-between;gap:8px}
+.info-curta span{color:var(--mu);flex-shrink:0}
+.info-curta strong{text-align:right;font-weight:600;word-break:break-word}
+.obs-box{
+  padding:6px 8px;border-radius:7px;background:#fffbeb;border:1px solid #fde68a;
+  color:#78350f;font-size:11.5px;font-weight:600
+}
+
+.itens{width:100%;border-collapse:collapse;font-size:12px}
+.itens td{padding:4px 2px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.itens td.qtd{width:30px;font-weight:700;color:var(--ac)}
+.itens td.val{text-align:right;white-space:nowrap;font-weight:600}
+
+.pedido-rodape{
+  display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;
+  padding-top:7px;border-top:1px solid #e2e8f0
+}
+.total-box span{display:block;font-size:10.5px;color:var(--mu)}
+.total-box strong{font-size:15px;font-weight:700}
+.acoes{display:flex;gap:6px;flex-wrap:wrap}
+
+.vazio{
+  grid-column:1/-1;padding:24px 14px;border:1px dashed var(--bd);
+  border-radius:10px;background:var(--sf);color:var(--mu);text-align:center;font-size:12.5px
+}
+
+#aviso{
+  position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:50;
+  max-width:92vw;padding:8px 14px;border-radius:8px;background:var(--er);color:#fff;font-size:12px;font-weight:600
+}
+#aviso.escondido{display:none}
+
+@media(max-width:860px){
+  .barra{grid-template-columns:1fr}
+}
+@media(max-width:540px){
+  .usuario-txt{display:none}
+  .conteudo{padding:9px 9px 28px;gap:8px}
+  #lista{grid-template-columns:1fr}
+  .resumo strong{font-size:15px}
+}
+
+#comanda{display:none}
+@media print{
+  body{background:#fff}
+  body>*:not(#comanda){display:none!important}
+  #comanda{display:block;width:var(--bobina);padding:var(--cm);background:#fff;color:#000;font:var(--cf)/1.35 "Courier New",monospace}
+  #comanda h1{font-size:1.3em;text-align:center}
+  #comanda p{margin:0 0 2px}
+  #comanda .c{text-align:center}
+  #comanda hr{margin:5px 0;border:0;border-top:1px dashed #000}
+  #comanda .l{display:flex;justify-content:space-between;gap:6px}
+  #comanda .tt{font-size:1.15em;font-weight:700}
+}
+</style>
+<style id="pagina-impressao"></style>
+</head>
+<body>
+<main id="login">
+  <form id="form-login" class="login">
+    <h1>Painel de Pedidos</h1>
+    <p class="mu" style="font-size:12px">Acesso ao painel da pastelaria.</p>
+    <div>
+      <label for="email">E-mail</label>
+      <input id="email" type="email" autocomplete="username" value="aline0arcanjo10@gmail.com" required>
+    </div>
+    <div>
+      <label for="senha">Senha</label>
+      <div class="campo-senha">
+        <input id="senha" type="password" autocomplete="current-password" value="123456" required>
+        <button id="btn-olho" class="btn-olho" type="button" aria-pressed="false" aria-label="Mostrar ou ocultar senha">Mostrar</button>
+      </div>
+    </div>
+    <p id="erro-login" class="erro" role="alert"></p>
+    <button class="btn pri" type="submit">Entrar</button>
+    <button id="btn-demo" class="btn" type="button">Entrar em modo demonstração</button>
+  </form>
+</main>
+
+<div id="app" class="escondido">
+  <header class="topo">
+    <div class="topo-esq">
+      <h1>Pastelaria - Pedidos</h1>
+      <span id="badge-modo" class="badge-modo escondido">Demo</span>
+    </div>
+    <div class="topo-dir">
+      <span id="usuario" class="usuario-txt"></span>
+      <button id="btn-sair" class="btn ghost" type="button">Sair</button>
+    </div>
+  </header>
+
+  <main class="conteudo">
+    <section class="barra">
+      <div class="bloco">
+        <span class="bloco-tit">Filtros</span>
+        <div class="seg" id="seg-status">
+          <button type="button" data-v="todos" aria-pressed="true">Todos</button>
+          <button type="button" data-v="novo" aria-pressed="false">Novos</button>
+          <button type="button" data-v="concluido" aria-pressed="false">Concluídos</button>
+        </div>
+        <div>
+          <label for="periodo">Período</label>
+          <select id="periodo">
+            <option value="todos">Todo o período</option>
+            <option value="hoje" selected>Hoje</option>
+            <option value="mes">Este mês</option>
+            <optgroup id="meses" label="Mês / Ano"></optgroup>
+          </select>
+        </div>
+      </div>
+
+      <div class="bloco">
+        <span class="bloco-tit">Alerta sonoro</span>
+        <p id="estado-som" class="mu" style="font-size:11.5px"></p>
+        <div class="linha">
+          <button id="btn-som" class="btn" type="button"></button>
+          <button id="btn-testar" class="btn" type="button">Testar som</button>
+        </div>
+      </div>
+
+      <div class="bloco">
+        <span class="bloco-tit">Impressão</span>
+        <div class="linha">
+          <div class="col">
+            <label for="perfil">Perfil</label>
+            <select id="perfil"></select>
+          </div>
+          <div class="col">
+            <label for="largura">Bobina</label>
+            <select id="largura">
+              <option value="80">80 mm (padrão)</option>
+              <option value="58">58 mm</option>
+              <option value="76">76 mm (antiga/específica)</option>
+              <option value="60">60 mm</option>
+              <option value="44">44 mm</option>
+            </select>
+          </div>
+        </div>
+        <div class="linha" style="justify-content:space-between">
+          <label class="chk"><input id="auto" type="checkbox"> Autoimprimir novos</label>
+          <button id="btn-simular" class="btn" type="button">Simular pedido</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="resumo" class="resumo" aria-live="polite"></section>
+    <section id="lista"></section>
+  </main>
+</div>
+
+<div id="comanda"></div>
+<div id="aviso" class="escondido" role="alert"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { getDatabase, ref, onValue, update, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js";
+
+const MODO_DEMO = true;
+
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+  authDomain: "SEU_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://SEU_PROJECT_ID-default-rtdb.firebaseio.com",
+  projectId: "SEU_PROJECT_ID",
+  storageBucket: "SEU_PROJECT_ID.firebasestorage.app",
+  messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+  appId: "SEU_APP_ID"
+};
+const NOME_LOJA = "Pastelaria";
+
+const firebasePronto = !firebaseConfig.apiKey.startsWith("SUA_");
+let auth = null, db = null;
+if (firebasePronto) {
+  const app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getDatabase(app);
+}
+
+const PERFIS = {
+  generico: { nome: "Genérico / Padrão", fonte: 12, margem: 3 },
+  epson: { nome: "Epson", fonte: 12, margem: 4 },
+  elgin: { nome: "Elgin", fonte: 12, margem: 3 },
+  bematech: { nome: "Bematech", fonte: 12, margem: 3 },
+  daruma: { nome: "Daruma", fonte: 11, margem: 3 },
+  tanca: { nome: "Tanca", fonte: 11, margem: 3 }
+};
+const ERROS = {
+  "auth/invalid-credential": "E-mail ou senha inválidos.",
+  "auth/invalid-email": "E-mail inválido.",
+  "auth/too-many-requests": "Muitas tentativas. Aguarde e tente novamente.",
+  "auth/network-request-failed": "Falha de conexão. Verifique a internet."
+};
+
+const $ = (s) => document.querySelector(s);
+const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+const dinheiro = (v) => brl.format(Number(v) || 0);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+const dataHora = (ms) => {
+  if (!ms) return "-";
+  const d = new Date(ms);
+  const data = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const hora = d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  return `${data} às ${hora}`;
+};
+const chaveMes = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+const numero = (p) => p.id.slice(-6).toUpperCase();
+const ehEntrega = (p) => /entrega|delivery/i.test(p.tipoEntrega ?? "");
+const modalidade = (p) => (ehEntrega(p) ? "Entrega" : p.tipoEntrega ? "Retirada" : "-");
+const itensDe = (p) => (Array.isArray(p.itens) ? p.itens : Object.values(p.itens ?? {})).map(normalizarItem);
+const pref = {
+  ler: (k, d) => { try { const v = localStorage.getItem("painel." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  gravar: (k, v) => { try { localStorage.setItem("painel." + k, JSON.stringify(v)); } catch {} }
+};
+
+function pedidosIniciaisDemo() {
+  const agora = Date.now();
+  return [
+    {
+      id: "DEMO-100101",
+      cliente: "Mariana Silva",
+      telefone: "(74) 99911-2233",
+      itens: [
+        { nome: "Pastel de carne", quantidade: 2, preco: 9 },
+        { nome: "Caldo de cana 500 ml", quantidade: 1, preco: 7 }
+      ],
+      observacoes: "Sem pimenta.",
+      tipoEntrega: "entrega",
+      endereco: "Rua Aurora, 120 - Centro",
+      taxaEntrega: 5,
+      formaPagamento: "Pix",
+      troco: 0,
+      subtotal: 25,
+      total: 30,
+      status: "novo",
+      impresso: false,
+      criadoEm: agora - 3 * 60 * 1000
+    },
+    {
+      id: "DEMO-100102",
+      cliente: "Pedro Henrique",
+      telefone: "(74) 99744-5566",
+      itens: [
+        { nome: "Pastel de queijo", quantidade: 3, preco: 8.5 }
+      ],
+      observacoes: "",
+      tipoEntrega: "retirada",
+      endereco: "",
+      taxaEntrega: 0,
+      formaPagamento: "Dinheiro",
+      troco: 30,
+      subtotal: 25.5,
+      total: 25.5,
+      status: "novo",
+      impresso: false,
+      criadoEm: agora - 12 * 60 * 1000
+    },
+    {
+      id: "DEMO-100103",
+      cliente: "Carlos Eduardo",
+      telefone: "(74) 99822-3344",
+      itens: [
+        { nome: "Pastel de frango com catupiry", quantidade: 2, preco: 10 }
+      ],
+      observacoes: "",
+      tipoEntrega: "retirada",
+      endereco: "",
+      taxaEntrega: 0,
+      formaPagamento: "Cartão",
+      troco: 0,
+      subtotal: 20,
+      total: 20,
+      status: "concluido",
+      impresso: true,
+      criadoEm: agora - 45 * 60 * 1000
+    }
+  ];
+}
+
+const estado = { pedidos: [], status: "todos", periodo: "hoje", demoAtivo: false };
+const conhecidos = new Set();
+const impressos = new Set();
+const fila = [];
+let cancelarEscuta = null, primeiraCarga = true, imprimindo = false, ctx = null, timerAviso, seqDemo = 104;
+let somAtivo = pref.ler("som", true);
+
+function aviso(msg) {
+  const el = $("#aviso");
+  el.textContent = msg;
+  el.classList.remove("escondido");
+  clearTimeout(timerAviso);
+  timerAviso = setTimeout(() => el.classList.add("escondido"), 7000);
+}
+
+function normalizarItem(i) {
+  if (!i || typeof i !== "object") return { q: 1, n: String(i ?? ""), v: null };
+  const q = Number(i.quantidade ?? i.qtd ?? i.qtde ?? 1) || 1;
+  const pu = i.preco ?? i.valor ?? i.precoUnitario;
+  const v = i.subtotal ?? i.total ?? (pu != null ? Number(pu) * q : null);
+  return { q, n: i.nome ?? i.produto ?? i.descricao ?? i.item ?? "Item", v };
+}
+
+function audio() {
+  ctx ??= new (window.AudioContext || window.webkitAudioContext)();
+  if (ctx.state === "suspended") ctx.resume();
+  return ctx;
+}
+
+function nota(freq, inicio, dur) {
+  const c = audio(), t = c.currentTime + inicio;
+  [[1, 0.16], [2, 0.05], [3, 0.02]].forEach(([mult, ganho]) => {
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = "sine";
+    o.frequency.value = freq * mult;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(ganho, t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(c.destination);
+    o.start(t);
+    o.stop(t + dur + 0.05);
+  });
+}
+
+function tocarSino() {
+  try { nota(1174.66, 0, 1.1); nota(880, 0.28, 1.4); } catch {}
+}
+
+function rotuloSom() {
+  $("#btn-som").textContent = somAtivo ? "Silenciar" : "Ativar";
+  $("#estado-som").textContent = "Som " + (somAtivo ? "ativado" : "silenciado");
+}
+
+function cartao(p) {
+  const ok = p.status === "concluido";
+  const linhas = itensDe(p).map((i) => `<tr><td class="qtd">${i.q}x</td><td>${esc(i.n)}</td><td class="val">${i.v != null ? dinheiro(i.v) : "-"}</td></tr>`).join("");
+  const pgto = p.troco ? `${esc(p.formaPagamento || "-")} · Troco p/ ${dinheiro(p.troco)}` : esc(p.formaPagamento || "-");
+  const destino = ehEntrega(p) ? `${esc(p.endereco || "-")}` : modalidade(p);
+  return `<article class="pedido" data-id="${esc(p.id)}">
+  <div class="pedido-topo">
+    <div class="pedido-id"><strong>#${numero(p)}</strong><span>${dataHora(p.criadoEm)}</span></div>
+    <div class="tags">
+      ${p.impresso ? '<span class="tag">Impresso</span>' : ""}
+      <span class="tag ${ok ? "ok" : "nv"}">${ok ? "Concluído" : "Novo"}</span>
+    </div>
+  </div>
+  <div class="info-curta">
+    <div><span>Cliente</span><strong>${esc(p.cliente || "-")} · ${esc(p.telefone || "-")}</strong></div>
+    <div><span>${modalidade(p)}</span><strong>${destino}</strong></div>
+    <div><span>Pagamento</span><strong>${pgto}</strong></div>
+  </div>
+  ${p.observacoes ? `<div class="obs-box">Obs: ${esc(p.observacoes)}</div>` : ""}
+  <table class="itens"><tbody>${linhas || '<tr><td colspan="3">Sem itens</td></tr>'}</tbody></table>
+  <div class="pedido-rodape">
+    <div class="total-box"><span>Total (${dinheiro(p.subtotal)} + taxa ${dinheiro(p.taxaEntrega)})</span><strong>${dinheiro(p.total)}</strong></div>
+    <div class="acoes">
+      <button class="btn" data-a="imprimir">Imprimir</button>
+      ${ok ? "" : '<button class="btn pri" data-a="concluir">Concluir</button>'}
+    </div>
+  </div>
+</article>`;
+}
+
+function filtrar() {
+  const agora = new Date(), hoje = agora.toDateString(), mes = chaveMes(agora), per = estado.periodo;
+  return estado.pedidos.filter((p) => {
+    if (estado.status !== "todos" && p.status !== estado.status) return false;
+    const d = new Date(p.criadoEm || 0);
+    if (per === "hoje") return d.toDateString() === hoje;
+    if (per === "mes") return chaveMes(d) === mes;
+    if (per.startsWith("m:")) return chaveMes(d) === per.slice(2);
+    return true;
+  });
+}
+
+function atualizarMeses() {
+  const meses = [...new Set(estado.pedidos.filter((p) => p.criadoEm).map((p) => chaveMes(new Date(p.criadoEm))))].sort().reverse();
+  $("#meses").innerHTML = meses.map((m) => `<option value="m:${m}">${m.slice(5)}/${m.slice(0, 4)}</option>`).join("");
+  $("#periodo").value = estado.periodo;
+}
+
+function render() {
+  const lista = filtrar();
+  const concluidos = lista.filter((p) => p.status === "concluido").length;
+  const valor = lista.reduce((s, p) => s + (Number(p.total) || 0), 0);
+  $("#resumo").innerHTML = `<div><span>Pedidos</span><strong>${lista.length}</strong></div><div><span>Concluídos</span><strong>${concluidos}</strong></div><div><span>Faturamento</span><strong>${dinheiro(valor)}</strong></div>`;
+  $("#lista").innerHTML = lista.length ? lista.map(cartao).join("") : '<p class="vazio">Nenhum pedido encontrado para o filtro selecionado.</p>';
+}
+
+function comanda(p) {
+  const l = (a, b) => `<div class="l"><span>${a}</span><span>${b}</span></div>`;
+  const itens = itensDe(p).map((i) => l(`${i.q}x ${esc(i.n)}`, i.v != null ? dinheiro(i.v) : "")).join("");
+  return `<h1>${esc(NOME_LOJA)}</h1><p class="c">COMANDA ${numero(p)}</p><p class="c">${dataHora(p.criadoEm)}</p><hr>
+<p>Cliente: ${esc(p.cliente || "-")}</p><p>Telefone: ${esc(p.telefone || "-")}</p><p>${modalidade(p)}${ehEntrega(p) ? ": " + esc(p.endereco || "-") : ""}</p><hr>
+${itens}<hr>${p.observacoes ? `<p>OBS: ${esc(p.observacoes)}</p><hr>` : ""}
+${l("Subtotal", dinheiro(p.subtotal))}${l("Taxa de entrega", dinheiro(p.taxaEntrega))}<div class="l tt"><span>TOTAL</span><span>${dinheiro(p.total)}</span></div><hr>
+<p>Pagamento: ${esc(p.formaPagamento || "-")}</p>${p.troco ? `<p>Troco: ${dinheiro(p.troco)}</p>` : ""}`;
+}
+
+function imprimir(id) {
+  const p = estado.pedidos.find((x) => x.id === id);
+  if (!p) return;
+  $("#comanda").innerHTML = comanda(p);
+  impressos.add(id);
+  window.print();
+  if (estado.demoAtivo) {
+    p.impresso = true;
+    render();
+    return;
+  }
+  if (!p.impresso && db) update(ref(db, "pedidos/" + id), { impresso: true, impressoEm: serverTimestamp() }).catch(() => {});
+}
+
+async function processarFila() {
+  if (imprimindo) return;
+  imprimindo = true;
+  while (fila.length) {
+    imprimir(fila.shift());
+    await new Promise((r) => setTimeout(r, 600));
+  }
+  imprimindo = false;
+}
+
+function aplicarImpressao() {
+  const perfil = PERFIS[$("#perfil").value] ?? PERFIS.generico;
+  const w = Number($("#largura").value) || 80;
+  const estreita = w <= 60 ? 1 : 0;
+  const raiz = document.documentElement.style;
+  raiz.setProperty("--bobina", w + "mm");
+  raiz.setProperty("--cf", perfil.fonte - estreita + "px");
+  raiz.setProperty("--cm", perfil.margem + estreita + "mm");
+  $("#pagina-impressao").textContent = `@page{size:${w}mm auto;margin:0}`;
+  pref.gravar("perfil", $("#perfil").value);
+  pref.gravar("largura", $("#largura").value);
+  pref.gravar("auto", $("#auto").checked);
+}
+
+function processarListaPedidos(listaOrdenada, dispararAlertas) {
+  estado.pedidos = listaOrdenada;
+  const novos = estado.pedidos.filter((p) => !conhecidos.has(p.id));
+  novos.forEach((p) => conhecidos.add(p.id));
+  const recebidos = !dispararAlertas ? [] : novos.filter((p) => p.status === "novo");
+  atualizarMeses();
+  render();
+  if (!recebidos.length) return;
+  if (somAtivo) tocarSino();
+  if ($("#auto").checked) {
+    recebidos.forEach((p) => { if (!p.impresso && !impressos.has(p.id)) fila.push(p.id); });
+    setTimeout(processarFila, 100);
+  }
+}
+
+function iniciarEscuta() {
+  if (!db) return;
+  primeiraCarga = true;
+  cancelarEscuta = onValue(ref(db, "pedidos"), (snap) => {
+    const ordenada = Object.entries(snap.val() ?? {}).map(([id, p]) => ({ id, ...p })).sort((a, b) => (b.criadoEm ?? 0) - (a.criadoEm ?? 0));
+    const disparar = !primeiraCarga;
+    primeiraCarga = false;
+    processarListaPedidos(ordenada, disparar);
+  }, (e) => aviso("Falha ao ler os pedidos: " + e.message));
+}
+
+function abrirPainel(rotuloUsuario, demo) {
+  estado.demoAtivo = demo;
+  $("#login").classList.add("escondido");
+  $("#app").classList.remove("escondido");
+  $("#badge-modo").classList.toggle("escondido", !demo);
+  $("#usuario").textContent = rotuloUsuario;
+  conhecidos.clear();
+  impressos.clear();
+  fila.length = 0;
+  if (demo) {
+    processarListaPedidos(pedidosIniciaisDemo(), false);
+  } else {
+    iniciarEscuta();
+  }
+}
+
+function fecharPainel() {
+  cancelarEscuta?.();
+  cancelarEscuta = null;
+  estado.demoAtivo = false;
+  estado.pedidos = [];
+  conhecidos.clear();
+  $("#lista").innerHTML = "";
+  $("#login").classList.remove("escondido");
+  $("#app").classList.add("escondido");
+}
+
+$("#btn-olho").addEventListener("click", () => {
+  const campoSenha = $("#senha");
+  const visivel = campoSenha.type === "text";
+  campoSenha.type = visivel ? "password" : "text";
+  $("#btn-olho").textContent = visivel ? "Mostrar" : "Ocultar";
+  $("#btn-olho").setAttribute("aria-pressed", String(!visivel));
+});
+
+$("#btn-demo").classList.toggle("escondido", !MODO_DEMO);
+
+$("#btn-demo").addEventListener("click", () => {
+  $("#erro-login").textContent = "";
+  abrirPainel("Modo demonstração", true);
+});
+
+$("#form-login").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const erro = $("#erro-login");
+  erro.textContent = "";
+  if (!firebasePronto) {
+    if (MODO_DEMO) {
+      abrirPainel($("#email").value.trim() || "aline0arcanjo10@gmail.com (demo)", true);
+    } else {
+      erro.textContent = "Preencha o objeto firebaseConfig no código antes de entrar.";
+    }
+    return;
+  }
+  try {
+    await signInWithEmailAndPassword(auth, $("#email").value.trim(), $("#senha").value);
+  } catch (err) {
+    erro.textContent = ERROS[err.code] ?? "Não foi possível entrar. Tente novamente.";
+  }
+});
+
+$("#btn-sair").addEventListener("click", () => {
+  if (estado.demoAtivo) {
+    fecharPainel();
+    return;
+  }
+  if (auth) signOut(auth);
+});
+
+$("#seg-status").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  estado.status = b.dataset.v;
+  document.querySelectorAll("#seg-status button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  render();
+});
+
+$("#periodo").addEventListener("change", (e) => { estado.periodo = e.target.value; render(); });
+
+$("#lista").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-a]");
+  if (!b) return;
+  const id = b.closest("article").dataset.id;
+  if (b.dataset.a === "imprimir") {
+    imprimir(id);
+    return;
+  }
+  if (estado.demoAtivo) {
+    const p = estado.pedidos.find((x) => x.id === id);
+    if (p) {
+      p.status = "concluido";
+      p.concluidoEm = Date.now();
+      render();
+    }
+    return;
+  }
+  if (db) update(ref(db, "pedidos/" + id), { status: "concluido", concluidoEm: serverTimestamp() }).catch((err) => aviso("Falha ao atualizar o pedido: " + err.message));
+});
+
+$("#btn-som").addEventListener("click", () => { somAtivo = !somAtivo; pref.gravar("som", somAtivo); rotuloSom(); });
+$("#btn-testar").addEventListener("click", tocarSino);
+document.addEventListener("pointerdown", () => { try { audio(); } catch {} }, { once: true });
+
+$("#btn-simular").addEventListener("click", async () => {
+  const itens = [
+    { nome: "Pastel de carne", quantidade: 2, preco: 9 },
+    { nome: "Pastel de queijo", quantidade: 1, preco: 8.5 },
+    { nome: "Caldo de cana 500 ml", quantidade: 1, preco: 7 }
+  ];
+  const subtotal = itens.reduce((s, i) => s + i.quantidade * i.preco, 0), taxaEntrega = 5;
+  const novoPedido = {
+    cliente: "Cliente Teste", telefone: "(00) 00000-0000", itens,
+    observacoes: "Pedido de teste. Sem cebola.", tipoEntrega: "entrega",
+    endereco: "Rua Exemplo, 100 - Centro", taxaEntrega, formaPagamento: "Dinheiro", troco: 50,
+    subtotal, total: subtotal + taxaEntrega, status: "novo", impresso: false,
+    criadoEm: Date.now(), dataFormatada: new Date().toLocaleString("pt-BR"), teste: true
+  };
+  if (estado.demoAtivo) {
+    const id = "DEMO-" + (seqDemo++);
+    const atual = [{ id, ...novoPedido }, ...estado.pedidos];
+    processarListaPedidos(atual, true);
+    return;
+  }
+  if (!db) {
+    aviso("Firebase não configurado.");
+    return;
+  }
+  try {
+    await push(ref(db, "pedidos"), { ...novoPedido, criadoEm: serverTimestamp() });
+  } catch (err) {
+    aviso("Falha ao simular o pedido: " + err.message);
+  }
+});
+
+$("#perfil").innerHTML = Object.entries(PERFIS).map(([k, v]) => `<option value="${k}">${v.nome}</option>`).join("");
+$("#perfil").value = pref.ler("perfil", "generico");
+$("#largura").value = pref.ler("largura", "80");
+$("#auto").checked = pref.ler("auto", false);
+["#perfil", "#largura", "#auto"].forEach((s) => $(s).addEventListener("change", aplicarImpressao));
+aplicarImpressao();
+rotuloSom();
+
+if (auth) {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      abrirPainel(user.email, false);
+    } else if (!estado.demoAtivo) {
+      fecharPainel();
+    }
+  });
+}
+</script>
+</body>
+</html>
