@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pastel do Chuas — Painel de Pedidos</title>
+<style>
+:root{
+  --bg:#f4f1ea;--sf:#ffffff;--sf2:#faf8f5;--tx:#1e1610;--mu:#5c4d42;
+  --bd:#dfd6c7;--ac:#1e1610;--ac2:#33251b;--gold:#d97706;--ring:#ea580c;
+  --ok:#15803d;--okb:#dcfce7;--cf:#166534;--cfb:#bbf7d0;
+  --nv:#b45309;--nvb:#fef3c7;--er:#b91c1c;--erb:#fee2e2;
+  --bobina:80mm;--util:72mm;--cf-size:12px;--cm:3mm
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:13.5px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p{margin:0}
+.mu{color:var(--mu)}
+.escondido{display:none!important}
+label{display:block;margin-bottom:3px;font-size:11px;font-weight:700;color:#3f3127;text-transform:uppercase;letter-spacing:.03em}
+input[type=email],input[type=password],input[type=text],input[type=number],select{
+  width:100%;height:35px;padding:0 9px;border:1px solid var(--bd);border-radius:8px;
+  background:var(--sf);color:var(--tx);font:inherit
+}
+input:focus,select:focus{outline:none;border-color:var(--ring);box-shadow:0 0 0 2px rgba(234,88,12,.16)}
+:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  height:32px;padding:0 10px;border:1px solid var(--bd);border-radius:8px;
+  background:var(--sf);color:var(--tx);font:600 12px/1 inherit;cursor:pointer;white-space:nowrap;
+  transition:background .12s,border-color .12s
+}
+.btn:hover:not(:disabled){background:#f3efe8;border-color:#b8aa96}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.pri{border-color:var(--ac);background:var(--ac);color:#fff}
+.btn.pri:hover:not(:disabled){background:var(--ac2)}
+.btn.ok{border-color:#86efac;background:var(--okb);color:var(--ok)}
+.btn.ghost{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.1);color:#fff}
+.btn.ghost:hover:not(:disabled){background:rgba(255,255,255,.18)}
+
+/* Login */
+#login{min-height:100dvh;display:grid;place-items:center;padding:16px}
+.login{
+  width:100%;max-width:380px;display:grid;gap:11px;padding:22px;
+  background:var(--sf);border:1px solid var(--bd);border-radius:14px;
+  box-shadow:0 14px 32px -18px rgba(30,22,16,.28)
+}
+.login h1{font-size:19px}
+.campo-senha{display:flex;gap:6px}
+.campo-senha input{flex:1}
+.erro{min-height:16px;color:var(--er);font-size:12px;font-weight:600}
+
+/* Topo */
+.topo{
+  position:sticky;top:0;z-index:20;
+  display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:8px 14px;background:var(--ac);color:#fff;border-bottom:2px solid var(--gold)
+}
+.topo-esq,.topo-dir{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.topo h1{font-size:15px;font-weight:700;color:#fbbf24}
+.data-bahia{font-size:11.5px;color:#f5f5f4;background:rgba(255,255,255,.09);padding:3px 8px;border-radius:999px}
+.pill{padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:5px}
+.pill.on{background:#dcfce7;color:#166534}
+.pill.off{background:#fee2e2;color:#b91c1c}
+.pill.pendente{background:#fef3c7;color:#92400e}
+.pill.demo{background:#fde68a;color:#78350f}
+.usuario-txt{font-size:11.5px;color:#e7e5e4;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.conteudo{max-width:1240px;margin:0 auto;padding:12px 14px 40px;display:grid;gap:10px}
+
+/* Barra de controles */
+.barra{
+  display:grid;grid-template-columns:1.15fr .95fr 1.4fr;gap:8px;
+  padding:10px;background:var(--sf);border:1px solid var(--bd);border-radius:12px
+}
+.bloco{display:grid;gap:7px;align-content:start;padding:9px 10px;background:var(--sf2);border:1px solid var(--bd);border-radius:10px}
+.bloco-tit{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--mu)}
+.linha{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.col{flex:1;min-width:105px}
+
+.seg{display:grid;grid-template-columns:repeat(4,1fr);background:#e7e0d5;padding:2px;border-radius:8px;gap:2px}
+.seg button{height:28px;border:0;border-radius:6px;background:transparent;color:#3f3127;font:600 11.5px/1 inherit;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--sf);color:var(--tx);box-shadow:0 1px 2px rgba(30,22,16,.12)}
+
+.som-compacto{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.vol-wrap{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--mu)}
+.vol-wrap input[type=range]{width:74px;accent-color:var(--ring)}
+
+.chk{display:inline-flex;align-items:center;gap:5px;margin:0;font-size:11.5px;font-weight:600;color:var(--tx);cursor:pointer;text-transform:none;letter-spacing:0}
+.chk input{width:14px;height:14px;margin:0;accent-color:var(--ac)}
+
+/* Resumo financeiro e operacional */
+.resumo{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden
+}
+.resumo>div{padding:9px 11px;border-left:1px solid var(--bd)}
+.resumo>div:first-child{border-left:0}
+.resumo span{display:block;font-size:10px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.03em}
+.resumo strong{display:block;margin-top:2px;font-size:15px;font-weight:800}
+.resumo small{display:block;margin-top:2px;font-size:10.5px;color:var(--mu)}
+
+.barra-hist{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:8px 12px;background:var(--sf);border:1px solid var(--bd);border-radius:10px;font-size:12px
+}
+
+/* Pedidos */
+#lista{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
+  gap:10px;align-items:start;max-height:76vh;overflow-y:auto;padding-right:2px
+}
+.pedido{
+  display:grid;gap:7px;padding:11px;
+  background:var(--sf);border:1px solid var(--bd);border-radius:12px;
+  box-shadow:0 2px 6px rgba(30,22,16,.04)
+}
+.pedido-topo{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+.pedido-id strong{font-size:13.5px}
+.pedido-id span{display:block;font-size:11px;color:var(--mu)}
+.tags{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.tag{
+  padding:2px 7px;border-radius:999px;font-size:10.5px;font-weight:700;
+  border:1px solid var(--bd);background:var(--sf2);color:var(--tx)
+}
+.tag.pendente{border-color:#fcd34d;background:var(--nvb);color:var(--nv)}
+.tag.confirmado{border-color:#93c5fd;background:#dbeafe;color:#1d4ed8}
+.tag.concluido{border-color:#86efac;background:var(--okb);color:var(--ok)}
+.tag.imp-ok{border-color:#86efac;background:var(--cfb);color:var(--cf)}
+.tag.imp-err{border-color:#fca5a5;background:var(--erb);color:var(--er)}
+
+.info-curta{
+  display:grid;gap:3px;padding:7px 9px;border-radius:8px;
+  background:var(--sf2);border:1px solid #ede6da;font-size:11.5px
+}
+.info-curta div{display:flex;justify-content:space-between;gap:8px}
+.info-curta span{color:var(--mu);flex-shrink:0}
+.info-curta strong{text-align:right;font-weight:600;word-break:break-word}
+.info-curta a{color:#b45309;font-weight:700;text-decoration:underline}
+
+.obs-box{
+  padding:6px 8px;border-radius:8px;background:#fffbeb;border:1px solid #fde68a;
+  color:#78350f;font-size:11.5px;font-weight:600
+}
+.itens{width:100%;border-collapse:collapse;font-size:12px}
+.itens td{padding:4px 2px;border-bottom:1px solid #f3efe8;vertical-align:top}
+.itens td.qtd{width:30px;font-weight:800;color:var(--ac)}
+.itens td.val{text-align:right;white-space:nowrap;font-weight:700}
+
+.pedido-rodape{
+  display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;
+  padding-top:7px;border-top:1px solid #ede6da
+}
+.total-box span{display:block;font-size:10.5px;color:var(--mu)}
+.total-box strong{font-size:15px;font-weight:800}
+.acoes{display:flex;gap:5px;flex-wrap:wrap}
+
+.vazio{
+  grid-column:1/-1;padding:24px 14px;border:1px dashed var(--bd);
+  border-radius:12px;background:var(--sf);color:var(--mu);text-align:center;font-size:12.5px
+}
+
+#aviso{
+  position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:50;
+  max-width:92vw;padding:8px 14px;border-radius:8px;background:var(--er);color:#fff;font-size:12px;font-weight:600
+}
+
+@media(max-width:980px){
+  .barra{grid-template-columns:1fr}
+  .resumo{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:560px){
+  .usuario-txt{display:none}
+  .conteudo{padding:9px 9px 32px;gap:8px}
+  #lista{grid-template-columns:1fr;max-height:none;overflow-y:visible}
+  .resumo{grid-template-columns:1fr}
+}
+
+#comanda{display:none}
+@media print{
+  body{background:#fff}
+  body>*:not(#comanda){display:none!important}
+  #comanda{display:block;width:var(--bobina);max-width:var(--util);padding:var(--cm);background:#fff;color:#000;font:var(--cf-size)/1.35 "Courier New",monospace}
+  #comanda h1{font-size:1.25em;text-align:center}
+  #comanda p{margin:0 0 2px}
+  #comanda .c{text-align:center}
+  #comanda hr{margin:5px 0;border:0;border-top:1px dashed #000}
+  #comanda .l{display:flex;justify-content:space-between;gap:6px}
+  #comanda .tt{font-size:1.15em;font-weight:700}
+}
+</style>
+<style id="pagina-impressao"></style>
+</head>
+<body>
+<main id="login">
+  <form id="form-login" class="login">
+    <h1>Pastel do Chuas</h1>
+    <p class="mu" style="font-size:12px">Acesso administrativo com e-mail e senha autorizados.</p>
+    <div>
+      <label for="email">E-mail do proprietário</label>
+      <input id="email" type="email" autocomplete="username" placeholder="seu-email@dominio.com" required>
+    </div>
+    <div>
+      <label for="senha">Senha</label>
+      <div class="campo-senha">
+        <input id="senha" type="password" autocomplete="current-password" placeholder="Sua senha" required>
+        <button id="btn-olho" class="btn" type="button" aria-pressed="false">Mostrar</button>
+      </div>
+    </div>
+    <p id="erro-login" class="erro" role="alert"></p>
+    <button class="btn pri" type="submit">Entrar</button>
+    <button id="btn-demo" class="btn escondido" type="button">Modo demonstração (local)</button>
+  </form>
+</main>
+
+<div id="app" class="escondido">
+  <header class="topo">
+    <div class="topo-esq">
+      <h1>Pastel do Chuas</h1>
+      <span id="data-bahia" class="data-bahia">--/--/---- · --:--</span>
+      <span id="status-conexao" class="pill off">Conectando...</span>
+      <span id="badge-pendentes" class="pill pendente escondido">0 pendentes</span>
+      <span id="badge-demo" class="pill demo escondido">Demo local</span>
+    </div>
+    <div class="topo-dir">
+      <span id="usuario" class="usuario-txt"></span>
+      <button id="btn-sair" class="btn ghost" type="button">Sair</button>
+    </div>
+  </header>
+
+  <main class="conteudo">
+    <section class="barra">
+      <div class="bloco">
+        <span class="bloco-tit">Filtros e histórico</span>
+        <div class="seg" id="seg-status">
+          <button type="button" data-v="todos" aria-pressed="true">Todos</button>
+          <button type="button" data-v="pendente" aria-pressed="false">Pendentes</button>
+          <button type="button" data-v="confirmado" aria-pressed="false">Confirmados</button>
+          <button type="button" data-v="concluido" aria-pressed="false">Concluídos</button>
+        </div>
+        <div class="linha">
+          <div class="col">
+            <label for="periodo">Período</label>
+            <select id="periodo">
+              <option value="hoje" selected>Hoje</option>
+              <option value="semana">Esta semana</option>
+              <option value="mes">Este mês</option>
+              <option value="ano">Este ano</option>
+              <option value="todos">Todo o histórico</option>
+              <optgroup id="meses" label="Meses anteriores"></optgroup>
+            </select>
+          </div>
+          <div class="col">
+            <label for="filtro-pgto">Pagamento</label>
+            <select id="filtro-pgto">
+              <option value="todos">Todos</option>
+              <option value="recebido">Recebidos</option>
+              <option value="pendente_pgto">A confirmar/troco</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="bloco">
+        <span class="bloco-tit">Alerta sonoro</span>
+        <div class="som-compacto">
+          <span id="estado-som" class="mu" style="font-size:11.5px;font-weight:600">Som ativo</span>
+          <div class="linha">
+            <button id="btn-som" class="btn" type="button">Silenciar</button>
+            <button id="btn-testar" class="btn" type="button">Testar</button>
+          </div>
+        </div>
+        <div class="vol-wrap">
+          <label for="volume-som" style="margin:0">Volume</label>
+          <input id="volume-som" type="range" min="0" max="100" value="80">
+          <span id="volume-val">80%</span>
+        </div>
+      </div>
+
+      <div class="bloco">
+        <span class="bloco-tit">Impressão térmica</span>
+        <div class="linha">
+          <div class="col">
+            <label for="perfil">Marca / Perfil</label>
+            <select id="perfil"></select>
+          </div>
+          <div class="col">
+            <label for="largura">Bobina</label>
+            <select id="largura">
+              <option value="80">80 mm</option>
+              <option value="58">58 mm</option>
+              <option value="76">76 mm</option>
+              <option value="60">60 mm</option>
+              <option value="44">44 mm</option>
+              <option value="custom">Personalizada</option>
+            </select>
+          </div>
+          <div class="col" id="box-bobina-custom" style="display:none">
+            <label for="bobina-custom">Mm</label>
+            <input id="bobina-custom" type="number" min="30" max="120" value="80">
+          </div>
+        </div>
+        <div class="linha">
+          <div class="col">
+            <label for="largura-util">Larg. útil (mm)</label>
+            <input id="largura-util" type="number" min="24" max="110" value="72">
+          </div>
+          <div class="col">
+            <label for="margem-mm">Margem (mm)</label>
+            <input id="margem-mm" type="number" min="0" max="15" value="3">
+          </div>
+          <div class="col">
+            <label for="canal-imp">Conexão</label>
+            <select id="canal-imp">
+              <option value="manual">Navegador / Manual</option>
+              <option value="usb">USB (WebSerial)</option>
+              <option value="rede">Wi-Fi / Ethernet</option>
+              <option value="bluetooth">Bluetooth (WebBLE)</option>
+            </select>
+          </div>
+        </div>
+        <div class="linha" style="justify-content:space-between">
+          <div class="linha">
+            <input id="destino-imp" type="text" placeholder="Ex: /dev/ttyUSB0 ou http://192.168.0.100:9100" style="width:185px;height:30px;font-size:11.5px">
+            <span id="status-imp" class="mu" style="font-size:11px;font-weight:600">Pronta</span>
+          </div>
+          <div class="linha">
+            <label class="chk"><input id="auto" type="checkbox"> Auto</label>
+            <button id="btn-teste-imp" class="btn" type="button">Teste</button>
+            <button id="btn-simular" class="btn escondido" type="button">Simular</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="resumo" class="resumo" aria-live="polite"></section>
+
+    <div class="barra-hist">
+      <span id="info-paginacao" class="mu">Carregando histórico...</span>
+      <div class="linha">
+        <button id="btn-mais-hist" class="btn" type="button">Carregar mais antigos</button>
+      </div>
+    </div>
+
+    <section id="lista"></section>
+  </main>
+</div>
+
+<div id="comanda"></div>
+<div id="aviso" class="escondido" role="alert"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import {
+  getDatabase, ref, onValue, update, serverTimestamp,
+  query, orderByChild, limitToLast, endBefore, get
+} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js";
+
+/* Modo demonstração reativado temporariamente: usa dados fictícios locais sem tocar no Realtime Database */
+const MODO_DEMO = true;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAQbgT96kRZ6wnf0pZfARIfOtf7ifCBNNE",
+  authDomain: "pastel-do-chuas.firebaseapp.com",
+  databaseURL: "https://pastel-do-chuas-default-rtdb.firebaseio.com",
+  projectId: "pastel-do-chuas",
+  storageBucket: "pastel-do-chuas.firebasestorage.app",
+  messagingSenderId: "356503415114",
+  appId: "1:356503415114:web:ee7220b84f03d33cebb9b3"
+};
+const NOME_LOJA = "Pastel do Chuas";
+const TAMANHO_PAGINA = 30;
+const DEVICE_ID = (() => {
+  try {
+    let id = localStorage.getItem("chuas.device_id");
+    if (!id) { id = "dev-" + Math.random().toString(36).slice(2, 10); localStorage.setItem("chuas.device_id", id); }
+    return id;
+  } catch { return "dev-local"; }
+})();
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+const PERFIS = {
+  generico: { nome: "Genérico / ESC-POS", fonte: 12, margem: 3 },
+  epson: { nome: "Epson", fonte: 12, margem: 4 },
+  elgin: { nome: "Elgin", fonte: 12, margem: 3 },
+  bematech: { nome: "Bematech", fonte: 12, margem: 3 },
+  daruma: { nome: "Daruma", fonte: 11, margem: 3 },
+  tanca: { nome: "Tanca", fonte: 11, margem: 3 },
+  knup: { nome: "Knup", fonte: 12, margem: 3 },
+  xprinter: { nome: "Xprinter", fonte: 12, margem: 3 },
+  gprinter: { nome: "Gprinter", fonte: 12, margem: 3 },
+  dimep: { nome: "Dimep", fonte: 11, margem: 3 },
+  tomate: { nome: "Tomate", fonte: 11, margem: 3 }
+};
+
+const ERROS_AUTH = {
+  "auth/invalid-credential": "E-mail ou senha inválidos.",
+  "auth/invalid-email": "E-mail inválido.",
+  "auth/too-many-requests": "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
+  "auth/network-request-failed": "Falha de conexão. Verifique sua internet."
+};
+
+const ESTADOS_IMP = {
+  aguardando: { rotulo: "Imp: aguardando", cls: "tag pendente" },
+  enviando: { rotulo: "Imp: enviando...", cls: "tag confirmado" },
+  enviado: { rotulo: "Imp: enviado", cls: "tag" },
+  confirmado: { rotulo: "Imp: confirmado", cls: "tag imp-ok" },
+  falha: { rotulo: "Imp: falha", cls: "tag imp-err" },
+  incerto: { rotulo: "Imp: incerto", cls: "tag pendente" }
+};
+
+const $ = (s) => document.querySelector(s);
+const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+const dinheiro = (v) => brl.format(Number(v) || 0);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+const pref = {
+  ler: (k, d) => { try { const v = localStorage.getItem("chuas." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  gravar: (k, v) => { try { localStorage.setItem("chuas." + k, JSON.stringify(v)); } catch {} }
+};
+
+function bahiaParts(ms = Date.now()) {
+  const d = new Date(ms);
+  const parts = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Bahia",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    weekday: "short", hour12: false
+  }).formatToParts(d);
+  const map = Object.fromEntries(parts.filter((p) => p.type !== "literal").map((p) => [p.type, p.value]));
+  return {
+    ano: Number(map.year),
+    mes: Number(map.month),
+    dia: Number(map.day),
+    hora: map.hour,
+    minuto: map.minute,
+    dataStr: `${map.day}/${map.month}/${map.year}`,
+    chaveDia: `${map.year}-${map.month}-${map.day}`,
+    chaveMes: `${map.year}-${map.month}`,
+    anoStr: `${map.year}`
+  };
+}
+
+function dataHoraBahia(ms) {
+  if (!ms) return "-";
+  const b = bahiaParts(ms);
+  return `${b.dataStr} às ${b.hora}:${b.minuto}`;
+}
+
+function atualizarRelogioBahia() {
+  const b = bahiaParts(Date.now());
+  $("#data-bahia").textContent = `${b.dataStr} · ${b.hora}:${b.minuto} (Bahia)`;
+}
+
+function normalizarStatusPedido(st) {
+  const s = String(st || "pendente").toLowerCase();
+  if (s === "novo" || s === "pendente") return "pendente";
+  if (s === "confirmado") return "confirmado";
+  if (s === "concluido" || s === "concluído") return "concluido";
+  return "pendente";
+}
+
+function pagamentoRecebido(p) {
+  if (p.pagamentoRecebido === true || p.pago === true) return true;
+  const forma = String(p.formaPagamento || "").toLowerCase();
+  if (normalizarStatusPedido(p.status) === "concluido" && !forma.includes("dinheiro")) {
+    return p.pagamentoRecebido !== false;
+  }
+  return false;
+}
+
+function normalizarItem(i) {
+  if (!i || typeof i !== "object") return { q: 1, n: String(i ?? ""), pu: null, v: null };
+  const q = Math.max(1, Number(i.quantidade ?? i.qtd ?? i.qtde ?? 1) || 1);
+  const pu = i.preco != null ? Number(i.preco) : (i.valor != null ? Number(i.valor) : (i.precoUnitario != null ? Number(i.precoUnitario) : null));
+  const v = i.subtotal != null ? Number(i.subtotal) : (i.total != null ? Number(i.total) : (pu != null && !Number.isNaN(pu) ? pu * q : null));
+  return { q, n: i.nome ?? i.produto ?? i.descricao ?? i.item ?? "Item", pu, v };
+}
+
+const itensDe = (p) => (Array.isArray(p.itens) ? p.itens : Object.values(p.itens ?? {})).map(normalizarItem);
+const ehEntrega = (p) => p.tipoEntrega === "entrega" || /entrega|delivery/i.test(p.tipoEntrega ?? "");
+const modalidade = (p) => (ehEntrega(p) ? "Entrega" : "Retirada");
+const numero = (p) => String(p.codigo || p.id || "").slice(-6).toUpperCase();
+
+const estado = {
+  pedidosMapa: new Map(),
+  status: "todos",
+  periodo: "hoje",
+  pgto: "todos",
+  demoAtivo: false,
+  conectado: false,
+  maisAntigosDisponiveis: true,
+  carregandoAntigos: false,
+  menorTimestampCarregado: null
+};
+
+const filaImpressao = pref.ler("fila_imp", []);
+const vistosAlertas = new Set(pref.ler("vistos_alerta", []));
+let cancelarEscuta = null, cancelarConexao = null, primeiraCarga = true, processandoFila = false;
+let ctxAudio = null, timerAviso = null, portaSerial = null;
+let somAtivo = pref.ler("som", true);
+let volumeSom = pref.ler("volume", 80);
+
+function persistirFila() {
+  pref.gravar("fila_imp", filaImpressao.slice(-100));
+}
+
+function aviso(msg) {
+  const el = $("#aviso");
+  el.textContent = msg;
+  el.classList.remove("escondido");
+  clearTimeout(timerAviso);
+  timerAviso = setTimeout(() => el.classList.add("escondido"), 6500);
+}
+
+/* Áudio */
+function garantirAudio() {
+  if (!ctxAudio) ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
+  if (ctxAudio.state === "suspended") ctxAudio.resume().catch(() => {});
+  return ctxAudio;
+}
+
+function tocarNota(freq, inicio, dur) {
+  const c = garantirAudio();
+  const volBase = Math.max(0, Math.min(1, volumeSom / 100));
+  if (volBase === 0) return;
+  const t = c.currentTime + inicio;
+  [[1, 0.22], [2, 0.08], [3, 0.03]].forEach(([mult, ganho]) => {
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = "triangle";
+    o.frequency.value = freq * mult;
+    const pico = ganho * volBase * 2.2;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, pico), t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(c.destination);
+    o.start(t);
+    o.stop(t + dur + 0.05);
+  });
+}
+
+function tocarAlerta() {
+  try {
+    tocarNota(1046.5, 0, 0.35);
+    tocarNota(1318.5, 0.22, 0.45);
+    tocarNota(1567.98, 0.48, 0.65);
+  } catch {
+    aviso("Clique na tela para permitir a reprodução do som no navegador.");
+  }
+}
+
+function atualizarUI_Som() {
+  $("#btn-som").textContent = somAtivo ? "Silenciar" : "Ativar";
+  $("#estado-som").textContent = somAtivo ? "Som ativo" : "Silenciado";
+  $("#volume-som").value = String(volumeSom);
+  $("#volume-val").textContent = `${volumeSom}%`;
+}
+
+/* Impressão */
+function larguraBobinaAtual() {
+  const sel = $("#largura").value;
+  if (sel === "custom") return Math.max(30, Number($("#bobina-custom").value) || 80);
+  return Number(sel) || 80;
+}
+
+function aplicarConfigImpressao() {
+  const custom = $("#largura").value === "custom";
+  $("#box-bobina-custom").style.display = custom ? "" : "none";
+  const perfil = PERFIS[$("#perfil").value] ?? PERFIS.generico;
+  const w = larguraBobinaAtual();
+  const util = Math.max(24, Math.min(w, Number($("#largura-util").value) || (w - 8)));
+  const margem = Math.max(0, Math.min(15, Number($("#margem-mm").value) ?? perfil.margem));
+  const estreita = w <= 60 ? 1 : 0;
+
+  const raiz = document.documentElement.style;
+  raiz.setProperty("--bobina", `${w}mm`);
+  raiz.setProperty("--util", `${util}mm`);
+  raiz.setProperty("--cf-size", `${Math.max(9, perfil.fonte - estreita)}px`);
+  raiz.setProperty("--cm", `${margem}mm`);
+  $("#pagina-impressao").textContent = `@page{size:${w}mm auto;margin:0}`;
+
+  pref.gravar("perfil", $("#perfil").value);
+  pref.gravar("largura", $("#largura").value);
+  pref.gravar("bobina_custom", Number($("#bobina-custom").value) || 80);
+  pref.gravar("largura_util", util);
+  pref.gravar("margem_mm", margem);
+  pref.gravar("canal_imp", $("#canal-imp").value);
+  pref.gravar("destino_imp", $("#destino-imp").value.trim());
+  pref.gravar("auto", $("#auto").checked);
+}
+
+function montarTextoComanda(p, reimpressao = false) {
+  const l = (a, b) => `<div class="l"><span>${a}</span><span>${b}</span></div>`;
+  const itensHtml = itensDe(p).map((i) => l(`${i.q}x ${esc(i.n)}`, i.v != null ? dinheiro(i.v) : "")).join("");
+  const gpsLinha = p.gpsUrl ? `<p>GPS: ${esc(p.gpsUrl)}</p>` : (p.gps ? `<p>GPS: ${esc(p.gps)}</p>` : "");
+  const bairroLinha = p.bairro ? `<p>Bairro: ${esc(p.bairro)}</p>` : "";
+  const refLinha = p.referencia ? `<p>Ref: ${esc(p.referencia)}</p>` : "";
+  const trocoLinha = p.troco ? `<p>Troco p/: ${dinheiro(p.troco)}</p>` : "";
+  return `<h1>${esc(NOME_LOJA)}</h1>
+<p class="c">PEDIDO #${numero(p)} ${reimpressao ? "[REIMPRESSÃO]" : ""}</p>
+<p class="c">${dataHoraBahia(p.criadoEm)}</p><hr>
+<p>Cliente: ${esc(p.cliente || "-")}</p>
+<p>Tel: ${esc(p.telefone || "-")}</p>
+<p>${modalidade(p)}${ehEntrega(p) && p.endereco ? ": " + esc(p.endereco) : ""}</p>
+${bairroLinha}${refLinha}${gpsLinha}<hr>
+${itensHtml}<hr>
+${p.observacoes ? `<p>OBS: ${esc(p.observacoes)}</p><hr>` : ""}
+${l("Subtotal", dinheiro(p.subtotal))}
+${l("Taxa entrega", dinheiro(p.taxaEntrega))}
+<div class="l tt"><span>TOTAL</span><span>${dinheiro(p.total)}</span></div><hr>
+<p>Pagamento: ${esc(p.formaPagamento || "-")}</p>${trocoLinha}`;
+}
+
+function textoPuroComanda(p, reimpressao = false) {
+  const linhas = [
+    NOME_LOJA.toUpperCase(),
+    `PEDIDO #${numero(p)}${reimpressao ? " (REIMPRESSAO)" : ""}`,
+    dataHoraBahia(p.criadoEm),
+    "--------------------------------",
+    `Cliente: ${p.cliente || "-"}`,
+    `Tel: ${p.telefone || "-"}`,
+    `Tipo: ${modalidade(p)}${ehEntrega(p) && p.endereco ? " - " + p.endereco : ""}`,
+    p.bairro ? `Bairro: ${p.bairro}` : "",
+    p.referencia ? `Ref: ${p.referencia}` : "",
+    p.gpsUrl || p.gps ? `GPS: ${p.gpsUrl || p.gps}` : "",
+    "--------------------------------",
+    ...itensDe(p).map((i) => `${i.q}x ${i.n} -> ${i.v != null ? dinheiro(i.v) : "-"}`),
+    "--------------------------------",
+    p.observacoes ? `OBS: ${p.observacoes}` : "",
+    `Subtotal: ${dinheiro(p.subtotal)}`,
+    `Taxa entrega: ${dinheiro(p.taxaEntrega)}`,
+    `TOTAL: ${dinheiro(p.total)}`,
+    `Pagamento: ${p.formaPagamento || "-"}`,
+    p.troco ? `Troco p/: ${dinheiro(p.troco)}` : "",
+    "\n\n"
+  ].filter(Boolean);
+  return linhas.join("\n");
+}
+
+async function registrarEstadoImpressao(id, estadoImp, detalhe, reimpressao = false) {
+  const p = estado.pedidosMapa.get(id);
+  const agora = Date.now();
+  const patch = {
+    impressaoEstado: estadoImp,
+    impressaoDetalhe: detalhe,
+    impressaoAtualizadaEm: agora,
+    impressaoDispositivo: DEVICE_ID
+  };
+  if (estadoImp === "confirmado" || estadoImp === "enviado") {
+    patch.impresso = true;
+    patch.impressoEm = agora;
+  }
+  if (reimpressao) {
+    patch.reimpressoEm = agora;
+    patch.reimpressoPor = DEVICE_ID;
+  }
+  if (p) {
+    Object.assign(p, patch);
+    render();
+  }
+  if (!estado.demoAtivo && db) {
+    await update(ref(db, `pedidos/${id}`), patch).catch(() => {});
+  }
+}
+
+async function enviarViaCanal(p, reimpressao) {
+  const canal = $("#canal-imp").value;
+  const destino = $("#destino-imp").value.trim();
+
+  if (canal === "usb") {
+    if (!("serial" in navigator)) {
+      return { estado: "falha", detalhe: "WebSerial não suportado neste navegador/dispositivo." };
+    }
+    try {
+      if (!portaSerial) portaSerial = await navigator.serial.requestPort();
+      if (!portaSerial.writable) await portaSerial.open({ baudRate: 9600 });
+      const writer = portaSerial.writable.getWriter();
+      await writer.write(new TextEncoder().encode(textoPuroComanda(p, reimpressao)));
+      writer.releaseLock();
+      $("#status-imp").textContent = "USB conectado";
+      return { estado: "enviado", detalhe: "Enviado via USB serial (sem confirmação de papel do hardware)." };
+    } catch (e) {
+      return { estado: "falha", detalhe: "Falha USB: " + (e.message || "erro de escrita") };
+    }
+  }
+
+  if (canal === "rede") {
+    if (!destino) return { estado: "falha", detalhe: "Informe a URL/IP do agente ou ponte de rede." };
+    try {
+      const resp = await fetch(destino, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pedidoId: p.id, codigo: numero(p), reimpressao, texto: textoPuroComanda(p, reimpressao) })
+      });
+      if (!resp.ok) return { estado: "falha", detalhe: `Servidor/agente respondeu HTTP ${resp.status}.` };
+      const data = await resp.json().catch(() => ({}));
+      if (data.confirmado === true) return { estado: "confirmado", detalhe: "Confirmado pela impressora/agente de rede." };
+      return { estado: "enviado", detalhe: "Enviado ao endpoint de rede." };
+    } catch {
+      return { estado: "incerto", detalhe: "Sem resposta conclusiva de rede/CORS; verifique se imprimiu antes de tentar de novo." };
+    }
+  }
+
+  if (canal === "bluetooth") {
+    if (!("bluetooth" in navigator)) {
+      return { estado: "falha", detalhe: "WebBluetooth não disponível neste navegador/plataforma." };
+    }
+    try {
+      const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ["000018f0-0000-1000-8000-00805f9b34fb"] });
+      if (!device.gatt) return { estado: "falha", detalhe: "Dispositivo Bluetooth sem GATT acessível." };
+      const server = await device.gatt.connect();
+      if (!server.connected) return { estado: "falha", detalhe: "Conexão Bluetooth encerrada antes do envio." };
+      $("#status-imp").textContent = "BLE conectado";
+      return { estado: "incerto", detalhe: "Conectado via BLE; envio raw requer serviço/característica específica da impressora." };
+    } catch (e) {
+      return { estado: "falha", detalhe: "Bluetooth: " + (e.message || "cancelado ou sem suporte") };
+    }
+  }
+
+  /* Padrão: manual via janela de impressão do navegador */
+  $("#comanda").innerHTML = montarTextoComanda(p, reimpressao);
+  window.print();
+  return { estado: "incerto", detalhe: "Diálogo do navegador acionado; confirme manualmente se a impressão saiu." };
+}
+
+async function executarImpressaoPedido(id, { manual = false, forcar = false } = {}) {
+  const p = estado.pedidosMapa.get(id);
+  if (!p) return;
+
+  if (!manual && !forcar) {
+    if (p.impressaoEstado === "confirmado" || p.impressaoEstado === "enviado" || p.impresso === true) return;
+    if (p.impressaoEstado === "incerto") return;
+  }
+
+  await registrarEstadoImpressao(id, "enviando", manual ? "Reimpressão manual em andamento..." : "Enviando para impressão...", manual);
+  const res = await enviarViaCanal(p, manual);
+  await registrarEstadoImpressao(id, res.estado, res.detalhe, manual);
+  if (res.estado === "falha" || res.estado === "incerto") aviso(res.detalhe);
+}
+
+function enfileirarAutomatico(id) {
+  const p = estado.pedidosMapa.get(id);
+  if (!p) return;
+  if (p.impresso === true || p.impressaoEstado === "confirmado" || p.impressaoEstado === "enviado" || p.impressaoEstado === "incerto") return;
+  if (!filaImpressao.includes(id)) {
+    filaImpressao.push(id);
+    persistirFila();
+  }
+  registrarEstadoImpressao(id, "aguardando", "Na fila automática de impressão.", false);
+  processarFilaImpressao();
+}
+
+async function processarFilaImpressao() {
+  if (processandoFila || !$("#auto").checked) return;
+  processandoFila = true;
+  while (filaImpressao.length) {
+    const id = filaImpressao.shift();
+    persistirFila();
+    const p = estado.pedidosMapa.get(id);
+    if (!p || p.impresso === true || p.impressaoEstado === "confirmado" || p.impressaoEstado === "enviado") continue;
+    await executarImpressaoPedido(id, { manual: false, forcar: false });
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  processandoFila = false;
+}
+
+/* Pedidos, histórico e métricas */
+function listaOrdenada() {
+  return [...estado.pedidosMapa.values()].sort((a, b) => (b.criadoEm ?? 0) - (a.criadoEm ?? 0));
+}
+
+function dentroDoPeriodo(ms, per, agoraMs) {
+  if (per === "todos") return true;
+  if (!ms) return false;
+  const b = bahiaParts(ms);
+  const hoje = bahiaParts(agoraMs);
+  if (per === "hoje") return b.chaveDia === hoje.chaveDia;
+  if (per === "semana") {
+    const diffDias = (agoraMs - ms) / 86400000;
+    return diffDias >= 0 && diffDias < 7;
+  }
+  if (per === "mes") return b.chaveMes === hoje.chaveMes;
+  if (per === "ano") return b.anoStr === hoje.anoStr;
+  if (per.startsWith("m:")) return b.chaveMes === per.slice(2);
+  return true;
+}
+
+function pedidosNoPeriodo() {
+  const agoraMs = Date.now();
+  return listaOrdenada().filter((p) => dentroDoPeriodo(p.criadoEm, estado.periodo, agoraMs));
+}
+
+function filtrarPedidos() {
+  return pedidosNoPeriodo().filter((p) => {
+    const st = normalizarStatusPedido(p.status);
+    if (estado.status !== "todos" && st !== estado.status) return false;
+    const pago = pagamentoRecebido(p);
+    if (estado.pgto === "recebido" && !pago) return false;
+    if (estado.pgto === "pendente_pgto" && pago) return false;
+    return true;
+  });
+}
+
+function atualizarMeses() {
+  const meses = [...new Set(
+    listaOrdenada().filter((p) => p.criadoEm).map((p) => bahiaParts(p.criadoEm).chaveMes)
+  )].sort().reverse();
+  $("#meses").innerHTML = meses.map((m) => `<option value="m:${m}">${m.slice(5)}/${m.slice(0, 4)}</option>`).join("");
+  $("#periodo").value = estado.periodo;
+}
+
+function cartaoPedido(p) {
+  const st = normalizarStatusPedido(p.status);
+  const impKey = p.impressaoEstado || (p.impresso ? "confirmado" : "aguardando");
+  const impInfo = ESTADOS_IMP[impKey] || ESTADOS_IMP.aguardando;
+  const pago = pagamentoRecebido(p);
+  const itensHtml = itensDe(p).map((i) =>
+    `<tr><td class="qtd">${i.q}x</td><td>${esc(i.n)}</td><td class="val">${i.v != null ? dinheiro(i.v) : "-"}</td></tr>`
+  ).join("");
+
+  const pgtoTxt = p.troco
+    ? `${esc(p.formaPagamento || "-")} · Troco p/ ${dinheiro(p.troco)}`
+    : `${esc(p.formaPagamento || "-")} (${pago ? "Recebido" : "A confirmar"})`;
+
+  const gpsLink = p.gpsUrl || (p.gps ? `https://www.google.com/maps?q=${encodeURIComponent(p.gps)}` : "");
+  const destinoTxt = ehEntrega(p)
+    ? `${esc(p.endereco || "-")}${p.bairro ? ` — ${esc(p.bairro)}` : ""}`
+    : "Retirada no balcão";
+
+  return `<article class="pedido" data-id="${esc(p.id)}">
+  <div class="pedido-topo">
+    <div class="pedido-id">
+      <strong>#${numero(p)} · ${esc(p.cliente || "Cliente")}</strong>
+      <span>${dataHoraBahia(p.criadoEm)}</span>
+    </div>
+    <div class="tags">
+      <span class="tag ${st}">${st.charAt(0).toUpperCase() + st.slice(1)}</span>
+      <span class="${impInfo.cls}" title="${esc(p.impressaoDetalhe || impInfo.rotulo)}">${impInfo.rotulo}</span>
+    </div>
+  </div>
+
+  <div class="info-curta">
+    <div><span>Telefone</span><strong>${esc(p.telefone || "-")}</strong></div>
+    <div><span>${modalidade(p)}</span><strong>${destinoTxt}</strong></div>
+    ${p.referencia ? `<div><span>Referência</span><strong>${esc(p.referencia)}</strong></div>` : ""}
+    ${gpsLink ? `<div><span>GPS</span><strong><a href="${esc(gpsLink)}" target="_blank" rel="noopener">Abrir mapa</a></strong></div>` : ""}
+    <div><span>Pagamento</span><strong>${pgtoTxt}</strong></div>
+  </div>
+
+  ${p.observacoes ? `<div class="obs-box">Obs: ${esc(p.observacoes)}</div>` : ""}
+
+  <table class="itens"><tbody>${itensHtml || '<tr><td colspan="3">Sem itens</td></tr>'}</tbody></table>
+
+  <div class="pedido-rodape">
+    <div class="total-box">
+      <span>Sub ${dinheiro(p.subtotal)} + Taxa ${dinheiro(p.taxaEntrega)}</span>
+      <strong>${dinheiro(p.total)}</strong>
+    </div>
+    <div class="acoes">
+      <button class="btn" data-a="reimprimir">${p.impressaoEstado ? "Reimprimir" : "Imprimir"}</button>
+      ${st === "pendente" ? '<button class="btn" data-a="confirmar">Confirmar</button>' : ""}
+      ${st !== "concluido" ? '<button class="btn pri" data-a="concluir">Concluir</button>' : ""}
+      ${!pago ? '<button class="btn ok" data-a="marcar-pago">Marcar pago</button>' : ""}
+    </div>
+  </div>
+</article>`;
+}
+
+function render() {
+  atualizarRelogioBahia();
+  const basePeriodo = pedidosNoPeriodo();
+  const visiveis = filtrarPedidos();
+
+  const totalQtd = basePeriodo.length;
+  const pendentesQtd = basePeriodo.filter((p) => normalizarStatusPedido(p.status) === "pendente").length;
+  const confirmadosQtd = basePeriodo.filter((p) => normalizarStatusPedido(p.status) === "confirmado").length;
+  const concluidosLista = basePeriodo.filter((p) => normalizarStatusPedido(p.status) === "concluido");
+
+  const faturamentoConcluidos = concluidosLista.reduce((s, p) => s + (Number(p.total) || 0), 0);
+  const faturamentoRecebido = basePeriodo
+    .filter((p) => pagamentoRecebido(p))
+    .reduce((s, p) => s + (Number(p.total) || 0), 0);
+
+  const badgePend = $("#badge-pendentes");
+  badgePend.textContent = `${pendentesQtd} pendente${pendentesQtd === 1 ? "" : "s"}`;
+  badgePend.classList.toggle("escondido", pendentesQtd === 0);
+
+  $("#resumo").innerHTML = `
+    <div><span>Pedidos (período)</span><strong>${totalQtd}</strong><small>Exibindo ${visiveis.length}</small></div>
+    <div><span>Pendentes</span><strong>${pendentesQtd}</strong><small>Aguardando preparo</small></div>
+    <div><span>Confirmados</span><strong>${confirmadosQtd}</strong><small>Em andamento</small></div>
+    <div><span>Concluídos</span><strong>${concluidosLista.length}</strong><small>Venda concluída: ${dinheiro(faturamentoConcluidos)}</small></div>
+    <div><span>Recebido em caixa</span><strong>${dinheiro(faturamentoRecebido)}</strong><small>Pagamentos confirmados</small></div>
+  `;
+
+  $("#info-paginacao").textContent = `Histórico carregado: ${estado.pedidosMapa.size} registro(s)${estado.maisAntigosDisponiveis ? "" : " · Fim do histórico"}`;
+  $("#btn-mais-hist").disabled = estado.carregandoAntigos || !estado.maisAntigosDisponiveis || estado.demoAtivo;
+
+  $("#lista").innerHTML = visiveis.length
+    ? visiveis.map(cartaoPedido).join("")
+    : '<p class="vazio">Nenhum pedido encontrado para os filtros selecionados.</p>';
+}
+
+function reconciliarPedidos(novosRegistros, tocarAlertaEmNovos) {
+  let novosPendentesDetectados = 0;
+
+  for (const reg of novosRegistros) {
+    if (!reg || !reg.id) continue;
+    const anterior = estado.pedidosMapa.get(reg.id);
+    const combinado = { ...(anterior || {}), ...reg };
+    estado.pedidosMapa.set(reg.id, combinado);
+
+    if (combinado.criadoEm && (!estado.menorTimestampCarregado || combinado.criadoEm < estado.menorTimestampCarregado)) {
+      estado.menorTimestampCarregado = combinado.criadoEm;
+    }
+
+    const st = normalizarStatusPedido(combinado.status);
+    const jaVisto = vistosAlertas.has(reg.id);
+
+    if (!jaVisto) {
+      vistosAlertas.add(reg.id);
+      if (st === "pendente" && tocarAlertaEmNovos) {
+        novosPendentesDetectados++;
+      }
+      if ($("#auto").checked && st === "pendente" && !combinado.impresso) {
+        enfileirarAutomatico(reg.id);
+      }
+    }
+  }
+
+  pref.gravar("vistos_alerta", [...vistosAlertas].slice(-300));
+  atualizarMeses();
+  render();
+
+  if (novosPendentesDetectados > 0 && somAtivo) {
+    tocarAlerta();
+  }
+}
+
+async function carregarMaisAntigos() {
+  if (estado.demoAtivo || estado.carregandoAntigos || !estado.maisAntigosDisponiveis || !estado.menorTimestampCarregado) return;
+  estado.carregandoAntigos = true;
+  render();
+  try {
+    const qAntigos = query(
+      ref(db, "pedidos"),
+      orderByChild("criadoEm"),
+      endBefore(estado.menorTimestampCarregado - 1),
+      limitToLast(TAMANHO_PAGINA)
+    );
+    const snap = await get(qAntigos);
+    const itens = [];
+    snap.forEach((child) => {
+      itens.push({ id: child.key, ...child.val() });
+    });
+    if (itens.length < TAMANHO_PAGINA) estado.maisAntigosDisponiveis = false;
+    if (itens.length > 0) {
+      reconciliarPedidos(itens, false);
+    }
+  } catch (e) {
+    aviso("Falha ao carregar histórico antigo (verifique o índice criadoEm no Realtime Database): " + e.message);
+  } finally {
+    estado.carregandoAntigos = false;
+    render();
+  }
+}
+
+function iniciarEscutaTempoReal() {
+  cancelarEscuta?.();
+  cancelarConexao?.();
+  primeiraCarga = true;
+  estado.maisAntigosDisponiveis = true;
+  estado.menorTimestampCarregado = null;
+
+  cancelarConexao = onValue(ref(db, ".info/connected"), (snap) => {
+    estado.conectado = Boolean(snap.val());
+    const pill = $("#status-conexao");
+    pill.textContent = estado.conectado ? "Online" : "Offline";
+    pill.className = `pill ${estado.conectado ? "on" : "off"}`;
+  });
+
+  const qRecentes = query(ref(db, "pedidos"), orderByChild("criadoEm"), limitToLast(TAMANHO_PAGINA));
+  cancelarEscuta = onValue(qRecentes, (snap) => {
+    const itens = [];
+    snap.forEach((child) => {
+      itens.push({ id: child.key, ...child.val() });
+    });
+    const dispararAlerta = !primeiraCarga;
+    primeiraCarga = false;
+    reconciliarPedidos(itens, dispararAlerta);
+    if ($("#auto").checked) processarFilaImpressao();
+  }, (e) => {
+    aviso("Erro na escuta de pedidos: " + e.message);
+  });
+}
+
+function dadosDemoLocais() {
+  const agora = Date.now();
+  return [
+    {
+      id: "DEMO-90001", codigo: "90001", cliente: "Mariana Costa", telefone: "(74) 99911-2233",
+      itens: [{ nome: "Pastel de Carne", quantidade: 2, preco: 9 }, { nome: "Guaraná Lata", quantidade: 1, preco: 5 }],
+      subtotal: 23, taxaEntrega: 5, total: 28, tipoEntrega: "entrega",
+      endereco: "Rua Aurora, 45", bairro: "Centro", referencia: "Próximo à praça",
+      gpsUrl: "https://www.google.com/maps?q=-10.825,-42.725",
+      formaPagamento: "Pix", pagamentoRecebido: true, status: "pendente", impresso: false,
+      impressaoEstado: "aguardando", criadoEm: agora - 4 * 60 * 1000, observacoes: "Capricha no tempero"
+    },
+    {
+      id: "DEMO-90002", codigo: "90002", cliente: "Lucas Rocha", telefone: "(74) 99800-1122",
+      itens: [{ nome: "Pastel de Queijo", quantidade: 2, preco: 8.5 }],
+      subtotal: 17, taxaEntrega: 0, total: 17, tipoEntrega: "retirada",
+      formaPagamento: "Dinheiro", troco: 20, pagamentoRecebido: false, status: "confirmado",
+      impresso: true, impressaoEstado: "confirmado", criadoEm: agora - 25 * 60 * 1000
+    },
+    {
+      id: "DEMO-90003", codigo: "90003", cliente: "Ana Paula", telefone: "(74) 99755-6677",
+      itens: [{ nome: "Pastel Frango c/ Catupiry", quantidade: 3, preco: 10 }],
+      subtotal: 30, taxaEntrega: 7, total: 37, tipoEntrega: "entrega",
+      endereco: "Rua 10, 88", bairro: "Nair Barreto 2", formaPagamento: "Cartão",
+      pagamentoRecebido: true, status: "concluido", impresso: true,
+      impressaoEstado: "confirmado", criadoEm: agora - 80 * 60 * 1000
+    }
+  ];
+}
+
+function abrirPainel(usuarioRotulo, demo = false) {
+  if (demo && !MODO_DEMO) {
+    aviso("Modo demonstração desativado em produção.");
+    return;
+  }
+  estado.demoAtivo = Boolean(demo && MODO_DEMO);
+  estado.pedidosMapa.clear();
+  $("#login").classList.add("escondido");
+  $("#app").classList.remove("escondido");
+  $("#badge-demo").classList.toggle("escondido", !estado.demoAtivo);
+  $("#usuario").textContent = usuarioRotulo;
+
+  if (estado.demoAtivo) {
+    estado.maisAntigosDisponiveis = false;
+    $("#status-conexao").textContent = "Demo local";
+    $("#status-conexao").className = "pill demo";
+    reconciliarPedidos(dadosDemoLocais(), false);
+  } else {
+    iniciarEscutaTempoReal();
+  }
+}
+
+function fecharPainel() {
+  cancelarEscuta?.();
+  cancelarEscuta = null;
+  cancelarConexao?.();
+  cancelarConexao = null;
+  estado.demoAtivo = false;
+  estado.pedidosMapa.clear();
+  $("#lista").innerHTML = "";
+  $("#login").classList.remove("escondido");
+  $("#app").classList.add("escondido");
+}
+
+/* Eventos */
+$("#btn-olho").addEventListener("click", () => {
+  const inp = $("#senha");
+  const vis = inp.type === "text";
+  inp.type = vis ? "password" : "text";
+  $("#btn-olho").textContent = vis ? "Mostrar" : "Ocultar";
+  $("#btn-olho").setAttribute("aria-pressed", String(!vis));
+});
+
+$("#btn-demo").classList.toggle("escondido", !MODO_DEMO);
+$("#btn-simular").classList.toggle("escondido", !MODO_DEMO);
+$("#btn-demo").addEventListener("click", () => abrirPainel("Demonstração local (sem banco real)", true));
+
+$("#form-login").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("#erro-login").textContent = "";
+  try {
+    await signInWithEmailAndPassword(auth, $("#email").value.trim(), $("#senha").value);
+  } catch (err) {
+    $("#erro-login").textContent = ERROS_AUTH[err.code] ?? "Falha ao autenticar. Verifique e-mail e senha.";
+  }
+});
+
+$("#btn-sair").addEventListener("click", async () => {
+  if (estado.demoAtivo) { fecharPainel(); return; }
+  await signOut(auth).catch(() => {});
+});
+
+$("#seg-status").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  estado.status = b.dataset.v;
+  document.querySelectorAll("#seg-status button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  render();
+});
+
+$("#periodo").addEventListener("change", (e) => { estado.periodo = e.target.value; render(); });
+$("#filtro-pgto").addEventListener("change", (e) => { estado.pgto = e.target.value; render(); });
+$("#btn-mais-hist").addEventListener("click", carregarMaisAntigos);
+
+$("#btn-som").addEventListener("click", () => {
+  somAtivo = !somAtivo;
+  pref.gravar("som", somAtivo);
+  atualizarUI_Som();
+  if (somAtivo) tocarAlerta();
+});
+$("#btn-testar").addEventListener("click", tocarAlerta);
+$("#volume-som").addEventListener("input", (e) => {
+  volumeSom = Number(e.target.value) || 0;
+  pref.gravar("volume", volumeSom);
+  atualizarUI_Som();
+});
+
+document.addEventListener("pointerdown", () => {
+  try { garantirAudio(); } catch {}
+}, { once: true });
+
+$("#lista").addEventListener("click", async (e) => {
+  const b = e.target.closest("button[data-a]");
+  if (!b) return;
+  const id = b.closest("article")?.dataset.id;
+  if (!id) return;
+  const acao = b.dataset.a;
+
+  if (acao === "reimprimir") {
+    await executarImpressaoPedido(id, { manual: true, forcar: true });
+    return;
+  }
+
+  const p = estado.pedidosMapa.get(id);
+  if (!p) return;
+
+  if (acao === "confirmar") {
+    if (estado.demoAtivo) { p.status = "confirmado"; p.confirmadoEm = Date.now(); render(); return; }
+    await update(ref(db, `pedidos/${id}`), { status: "confirmado", confirmadoEm: serverTimestamp() }).catch((err) => aviso(err.message));
+  } else if (acao === "concluir") {
+    if (estado.demoAtivo) { p.status = "concluido"; p.concluidoEm = Date.now(); p.pagamentoRecebido = true; render(); return; }
+    await update(ref(db, `pedidos/${id}`), {
+      status: "concluido",
+      concluidoEm: serverTimestamp(),
+      pagamentoRecebido: true,
+      pagoEm: serverTimestamp()
+    }).catch((err) => aviso(err.message));
+  } else if (acao === "marcar-pago") {
+    if (estado.demoAtivo) { p.pagamentoRecebido = true; render(); return; }
+    await update(ref(db, `pedidos/${id}`), { pagamentoRecebido: true, pagoEm: serverTimestamp() }).catch((err) => aviso(err.message));
+  }
+});
+
+$("#btn-teste-imp").addEventListener("click", async () => {
+  const pedidoTeste = {
+    id: "TESTE-IMP", codigo: "TESTE", cliente: "Teste de Impressora", telefone: "(74) 99999-9999",
+    tipoEntrega: "retirada", formaPagamento: "Pix", subtotal: 10, taxaEntrega: 0, total: 10,
+    itens: [{ nome: "Pastel Teste", quantidade: 1, preco: 10 }], criadoEm: Date.now()
+  };
+  const res = await enviarViaCanal(pedidoTeste, true);
+  aviso(res.detalhe);
+});
+
+$("#btn-simular").addEventListener("click", () => {
+  if (!estado.demoAtivo) return;
+  const id = "DEMO-" + Math.floor(10000 + Math.random() * 89999);
+  reconciliarPedidos([{
+    id, codigo: id.slice(-5), cliente: "Cliente Demo", telefone: "(74) 99123-4567",
+    itens: [{ nome: "Pastel de Carne", quantidade: 2, preco: 9 }], subtotal: 18, taxaEntrega: 5, total: 23,
+    tipoEntrega: "entrega", endereco: "Rua Exemplo, 10", bairro: "Centro",
+    formaPagamento: "Pix", pagamentoRecebido: false, status: "pendente", impresso: false,
+    impressaoEstado: "aguardando", criadoEm: Date.now()
+  }], true);
+});
+
+/* Inicialização */
+$("#perfil").innerHTML = Object.entries(PERFIS).map(([k, v]) => `<option value="${k}">${v.nome}</option>`).join("");
+$("#perfil").value = pref.ler("perfil", "generico");
+$("#largura").value = pref.ler("largura", "80");
+$("#bobina-custom").value = String(pref.ler("bobina_custom", 80));
+$("#largura-util").value = String(pref.ler("largura_util", 72));
+$("#margem-mm").value = String(pref.ler("margem_mm", 3));
+$("#canal-imp").value = pref.ler("canal_imp", "manual");
+$("#destino-imp").value = pref.ler("destino_imp", "");
+$("#auto").checked = pref.ler("auto", false);
+
+["#perfil", "#largura", "#bobina-custom", "#largura-util", "#margem-mm", "#canal-imp", "#destino-imp", "#auto"].forEach((s) => {
+  $(s).addEventListener("change", () => {
+    aplicarConfigImpressao();
+    if ($("#auto").checked) processarFilaImpressao();
+  });
+});
+
+aplicarConfigImpressao();
+atualizarUI_Som();
+atualizarRelogioBahia();
+setInterval(atualizarRelogioBahia, 15000);
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    abrirPainel(user.email, false);
+  } else if (!estado.demoAtivo) {
+    fecharPainel();
+  }
+});
+</script>
+</body>
+</html>
